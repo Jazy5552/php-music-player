@@ -32,7 +32,7 @@ function playall() { //Damn nice closure!
 		//Except currently playing //WARN Its all gone to shit because of moving the audio up
 		Songs[CurrentSong].parentNode.parentNode.removeAttribute('style');
 		var cslabel = Songs[CurrentSong].parentNode.parentNode.getElementsByTagName('h2')[0].innerHTML;
-		document.title = oTitle + '[' + cslabel ']';
+		document.title = '[' + cslabel + ']';
 		//Only leave current text visible
 
 		//Copy playing to the top //NOW CHANGE SRC
