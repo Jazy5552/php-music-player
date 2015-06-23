@@ -178,6 +178,7 @@ header {
 	margin: auto;
 }
 .song h2 {
+	display: inline-block;
 	font-size: 1.2em;
 }
 
