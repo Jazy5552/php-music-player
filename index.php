@@ -44,8 +44,8 @@ function playall() { //Damn nice closure!
 		//	getElementsByTagName('div')[0].getElementsByTagName('h2')[0].innerHTML;
 	}
 	function onClick(id) {
-		if (CurrentAudio === null) return; //Hmmmm not sure if i should leave this TODO
-		CurrentSong = id;
+		if (CurrentAudio === null) return; //Hmmmm not sure if i should leave this
+		CurrentSong = Number(id);
 		pause();
 		play();
 	}
