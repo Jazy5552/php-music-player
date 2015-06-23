@@ -10,8 +10,11 @@ function playall() { //Damn nice closure!
 	var bPlayText = 'PLAY';
 	var bPausText = 'PAUSE';
 	var bDefaText = document.getElementById('play').innerHTML;
+	var bLoopSingText = 'LOOP SINGLE';
+	var bLoopAllText = 'LOOP ALL';
+	var bLoopDefaText = document.getElementById('loop').innerHTML; 
 	var notPlayingOpacity = 0.5;
-	var loop = false;
+	var loop = false; //This is for all songs loop
 	for (var i = 0; i < Songs.length; i++) {
 		Songs[i].pause();
 		Songs[i].removeEventListener('ended', onEnded);
@@ -39,14 +42,11 @@ function playall() { //Damn nice closure!
 		//	getElementsByTagName('div')[0].getElementsByTagName('h2')[0].innerHTML;
 	}
 	function onEnded() {
-		if (CurrentSong >= Songs.length) {
-			CurrentSong = 0;
-		} else {
-			++CurrentSong;
+		if (CurrentSong + 1 >= Songs.length && loop) {
+			next(); // I assure this function accomplished more in the glory days!
+		} else if (CurrentSong + 1 < Songs.length) {
+			next();
 		}
-		CurrentAudio.removeEventListener('ended', onEnded);
-		updateCurrentSong();
-		play();
 	}
 	function play() {
 		updateCurrentSong();
@@ -65,7 +65,7 @@ function playall() { //Damn nice closure!
 		document.getElementById('play').innerHTML = bPlayText;
 	}
 	function resume() {
-		if (CurrentAudio === undefined) return; //Nasty safetys...
+		if (CurrentAudio === null) return; //Nasty safetys...
 		CurrentAudio.play();
 		CurrentAudio.addEventListener('ended', onEnded);
 		document.getElementById('play').onclick = pause;
@@ -82,31 +82,47 @@ function playall() { //Damn nice closure!
 		}
 		CurrentSong = 0;
 		//updateCurrentSong();
-		var label = document.getElementById('currentsong');
+		//var label = document.getElementById('currentsong');
 		//label.innerHTML = '';
-		label.removeAttribute('style');
+		CurrentAudio.removeAttribute('style');
+		CurrentAudio.loop = false;
 		CurrentAudio = null;
+		loop = false;
 		document.getElementById('play').onclick = play;
 		document.getElementById('play').innerHTML = bDefaText;
+		document.getElementById('loop').innerHTML = bLoopDefaText; 
 	}
 	function next() {
-		if (CurrentAudio === undefined) return; //Nasty safetys...
+		if (CurrentAudio === null) return; //Nasty safetys...
 		pause();
 		if (++CurrentSong >= Songs.length) {
-			CurrentSong--;
+			CurrentSong = 0;
 		}
+		CurrentAudio.removeEventListener('ended', onEnded);
 		play();
 	}
 	function previous() {
-		if (CurrentAudio === undefined) return; //Nasty safetys...
+		if (CurrentAudio === null) return; //Nasty safetys...
 		pause();
 		if (--CurrentSong < 0 ) {
-			CurrentSong++; //Not gonna let you!
+			CurrentSong = Songs.length - 1;
 		}
+		CurrentAudio.removeEventListener('ended', onEnded);
 		play();
 	}
-	function loopToggle() {
-		//if (
+	function loopToggle() { //This is terrible to understand...sry
+		loopbutton = document.getElementById('loop'); 
+		if (loop) { //Disable all loops
+			loop = false;
+			loopbutton.innerHTML = bLoopDefaText; 
+		} else if (!loop && !CurrentAudio.loop) { //Enable single song loop (FIRST)
+			CurrentAudio.loop = true;
+			loopbutton.innerHTML = bLoopSingText;
+		} else { //Enable all songs loop (SECOND)
+			loop = true;
+			CurrentAudio.loop = false;
+			loopbutton.innerHTML = bLoopAllText;
+		}
 	}
 
 	//Attach events to buttons
@@ -172,6 +188,7 @@ header {
 		<button type="button" id="next">NEXT</button>
 		<button type="button" id="previous">PREVIOUS</button>
 		<button type="button" id="stop">STOP</button>
+		<button type="button" id="loop">LOOP</button>
 	</div>
 </section>
 <section id="songs">
