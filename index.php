@@ -30,11 +30,13 @@ function playall() { //Damn nice closure!
 		}
 		//Except currently playing //WARN Its all gone to shit because of moving the audio up
 		Songs[CurrentSong].parentNode.parentNode.removeAttribute('style');
+		var cslabel = Songs[CurrentSong].parentNode.parentNode.getElementsByTagName('h2')[0].innerHTML;
 		//Only leave current text visible
 
 		//Copy playing to the top //NOW CHANGE SRC
 		//label.innerHTML = Songs[CurrentSong].parentNode.parentNode.outerHTML;
 		CurrentAudio = document.getElementById('currentsong');
+		CurrentAudio.parentNode.getElementsByTagName('h2')[0].innerHTML = cslabel;
 		CurrentAudio.style.display = 'block';
 		CurrentAudio.src = Songs[CurrentSong].src;
 		CurrentAudio.load();
@@ -78,6 +80,7 @@ function playall() { //Damn nice closure!
 		document.getElementById('play').innerHTML = bPausText;
 	}
 	function stop() {
+		if (CurrentAudio === null) return;
 		pause();
 		for (var i = 0; i < Songs.length; i++) {
 			Songs[i].pause();
@@ -87,6 +90,7 @@ function playall() { //Damn nice closure!
 			Songs[i].removeAttribute('style');
 		}
 		CurrentSong = 0;
+		CurrentAudio.parentNode.getElementsByTagName('h2')[0].innerHTML = '';
 		//updateCurrentSong();
 		//var label = document.getElementById('currentsong');
 		//label.innerHTML = '';
@@ -117,6 +121,7 @@ function playall() { //Damn nice closure!
 		play();
 	}
 	function loopToggle() { //This is terrible to understand...sry
+	if (CurrentAudio === null) return;
 		loopbutton = document.getElementById('loop'); 
 		if (loop) { //Disable all loops
 			loop = false;
@@ -190,7 +195,7 @@ header {
 <section id="controls">
 	<div id='controllabel'>Controls for playing all the songs</div>
 	<div>
-		<span><audio id="currentsong" preload="auto" controls></audio></span>
+		<span><h2 id="cslabel"></h2><audio id="currentsong" preload="auto" controls></audio></span>
 		<button type="button" id="play"><!--Set by js--></button>
 		<button type="button" id="next">NEXT</button>
 		<button type="button" id="previous">PREVIOUS</button>
