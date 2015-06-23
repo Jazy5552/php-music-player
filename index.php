@@ -15,6 +15,7 @@ function playall() { //Damn nice closure!
 	var bLoopDefaText = document.getElementById('loop').innerHTML; 
 	var notPlayingOpacity = 0.5;
 	var loop = false; //This is for all songs loop
+	var oTitle = document.title;
 	for (var i = 0; i < Songs.length; i++) {
 		Songs[i].pause();
 		Songs[i].parentNode.parentNode.style.opacity = notPlayingOpacity;
@@ -31,6 +32,7 @@ function playall() { //Damn nice closure!
 		//Except currently playing //WARN Its all gone to shit because of moving the audio up
 		Songs[CurrentSong].parentNode.parentNode.removeAttribute('style');
 		var cslabel = Songs[CurrentSong].parentNode.parentNode.getElementsByTagName('h2')[0].innerHTML;
+		document.title = oTitle + '[' + cslabel ']';
 		//Only leave current text visible
 
 		//Copy playing to the top //NOW CHANGE SRC
@@ -79,7 +81,7 @@ function playall() { //Damn nice closure!
 		document.getElementById('play').onclick = pause;
 		document.getElementById('play').innerHTML = bPausText;
 	}
-	function stop() {
+	function stop() { //Reset everything!
 		if (CurrentAudio === null) return;
 		pause();
 		for (var i = 0; i < Songs.length; i++) {
@@ -89,6 +91,7 @@ function playall() { //Damn nice closure!
 			Songs[i].parentNode.parentNode.removeAttribute('style');
 			Songs[i].removeAttribute('style');
 		}
+		document.title = oTitle;
 		CurrentSong = 0;
 		CurrentAudio.parentNode.getElementsByTagName('h2')[0].innerHTML = '';
 		//updateCurrentSong();
