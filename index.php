@@ -203,7 +203,7 @@ header {
 		<button type="button" id="next">NEXT</button>
 		<button type="button" id="previous">PREVIOUS</button>
 		<button type="button" id="stop">STOP</button>
-		<button type="button" id="loop">LOOP</button>
+		<button type="button" id="loop">LOOP OFF</button>
 	</div>
 </section>
 <section id="songs">
