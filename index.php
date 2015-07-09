@@ -2,19 +2,36 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<script>
+<script>	
+function shuffle(a) { //Shuffles the array
+	var i = a.length, x, j;
+	while (--i) {
+		j = Math.floor(Math.random() * (i+1));
+		i;
+		x = a[i];
+		a[i] = a[j];
+		a[j] = x;
+	}
+	console.log(a);
+	//return a;
+}
 function playall() { //Damn nice closure!
 	var CurrentSong = 0;
 	var CurrentAudio = null;
 	var Songs = document.getElementsByClassName('audio');
+	Songs = Array.prototype.slice.call(Songs, 0);
+	var OriginalSongs = Songs.slice(0); //clone
 	var bPlayText = 'PLAY';
 	var bPausText = 'PAUSE';
 	var bDefaText = document.getElementById('play').innerHTML;
 	var bLoopSingText = 'LOOP SINGLE';
 	var bLoopAllText = 'LOOP ALL';
 	var bLoopDefaText = document.getElementById('loop').innerHTML; 
+	var bShuffleOnText = 'SHUFFLE ON';
+	var bShuffleDefaText = document.getElementById('shuffle').innerHTML;
 	var notPlayingOpacity = 0.5;
 	var loop = false; //This is for all songs loop
+	var shuffled = false; //Keep track of shuffle
 	var oTitle = document.title;
 	for (var i = 0; i < Songs.length; i++) {
 		Songs[i].pause();
@@ -44,6 +61,23 @@ function playall() { //Damn nice closure!
 		CurrentAudio.load();
 		//label.innerHTML = '#' + (CurrentSong+1) + ' ' +  Songs[CurrentSong].parentNode.parentNode.
 		//	getElementsByTagName('div')[0].getElementsByTagName('h2')[0].innerHTML;
+	}
+	function shuffleToggle() { //Just shuffle the songs array
+		if (CurrentAudio === null) return;
+		var shufflebutton = document.getElementById('shuffle');
+		if (!shuffled) {
+			shuffle(Songs);
+			shuffled = true;
+			shufflebutton.innerHTML = bShuffleOnText;
+		} else {
+			Songs = OriginalSongs.slice(0);
+			shuffled = false;
+			shufflebutton.innerHTML = bShuffleDefaText;
+			next();
+		}
+		pause();
+		CurrentSong = 0;
+		play();
 	}
 	function onClick(id) {
 		if (CurrentAudio === null) return; //Hmmmm not sure if i should leave this
@@ -146,6 +180,7 @@ function playall() { //Damn nice closure!
 	document.getElementById('previous').onclick = previous;
 	document.getElementById('stop').onclick = stop;
 	document.getElementById('loop').onclick = loopToggle;
+	document.getElementById('shuffle').onclick = shuffleToggle;
 	play();
 }
 
@@ -204,6 +239,7 @@ header {
 		<button type="button" id="previous">PREVIOUS</button>
 		<button type="button" id="stop">STOP</button>
 		<button type="button" id="loop">LOOP OFF</button>
+		<button type="button" id="shuffle">SHUFFLE</button>
 	</div>
 </section>
 <section id="songs">
