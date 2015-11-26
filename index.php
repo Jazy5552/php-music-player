@@ -1,3 +1,22 @@
+<?php
+$dir = scandir(__DIR__);
+$img = false;
+$songsHTML = '';
+$i = 0;
+foreach ($dir as $file) {
+	if (strpos($file, '.mp3') !== false) {
+		$songsHTML .= '<article class="song">
+			<div><h2 id="' . $i++ . '">' . substr($file, 0, strpos($file, '.mp3')) . '</h2></div>
+			<div><audio controls class="audio" preload="none" src="' . basename($file) . '">
+			Not supported
+			</audio></div></article>';
+	} else if (strpos($file, '.jpg') !== false) {
+		#Use the last jpg as the album cover
+		$img = basename($file);
+	}
+}
+?>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -212,6 +231,13 @@ header {
 	margin: 5px 0px 5px 0px;
 	padding: 0px;
 }
+#albumart img {
+	width: 300px;
+	float: right;
+	margin: 100px;
+	border-style: double;
+	border-width: 20px;
+}
 
 .song {
 	margin: auto;
@@ -230,6 +256,13 @@ header {
 </head>
 <body>
 <header><?php echo basename(__DIR__) ?></header>
+<?php #Album art
+if ($img !== false) {
+echo '<section id="albumart">';
+echo "  <img src=\"$img\"></img>";
+echo '</section>';
+}
+?>
 <section id="controls">
 	<div id='controllabel'>Controls for playing all the songs</div>
 	<div>
@@ -243,19 +276,7 @@ header {
 	</div>
 </section>
 <section id="songs">
-<?php
-$dir = scandir(__DIR__);
-$i = 0;
-foreach ($dir as $file) {
-	if (strpos($file, '.mp3') !== false) {
-		echo '<article class="song">
-			<div><h2 id="', $i++, '">', substr($file, 0, strpos($file, '.mp3')), '</h2></div>
-			<div><audio controls class="audio" preload="none" src="', basename($file), '">
-			Not supported
-			</audio></div></article>';
-	}
-}
-?>
+<?php echo $songsHTML; ?>
 </section>
 </body>
 </html>
