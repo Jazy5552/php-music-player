@@ -1,6 +1,6 @@
 <?php
 $dir = scandir(__DIR__);
-$img = false;
+$imgsHTML = '';
 $songsHTML = '';
 $i = 0;
 foreach ($dir as $file) {
@@ -11,9 +11,9 @@ foreach ($dir as $file) {
 			Not supported
 			</audio></div></article>';
 	} else if (strpos($file, '.jpg') !== false) {
-		#Use the last jpg as the album cover
-		$img = basename($file);
-	}
+		#Use the all jpg as the album cover
+		$imgsHTML .= '<img class="albumart" src="' . basename($file) . '"></img>';
+  }
 }
 ?>
 
@@ -202,10 +202,33 @@ function playall() { //Damn nice closure!
 	document.getElementById('shuffle').onclick = shuffleToggle;
 	play();
 }
+function scrollAlbumArt() {
+	var DELAY = 20;
+	var imgs = document.getElementsByClassName('albumart');
+	if (imgs === undefined) return; //No images were found
+  //Display the first one
+	imgs[0].style.opacity = '1';
+	if (imgs.length === 1) { 
+		//Only 1 was found just display it
+		return;
+	}
+	var current = 0;
+	function scrollNext() {
+		//Hide the currnet image and display the next while moving the iterator (current)
+		imgs[current].style.opacity = '0';
+		current++;
+		if (current >= imgs.length) current = 0;
+		imgs[current].style.opacity = '1';
+		//Change to the next image after delay
+		setTimeout(scrollNext, DELAY*1000);
+	}
+	setTimeout(scrollNext, DELAY*1000);
+}
 
 window.onload = function() {
 	document.getElementById('play').innerHTML = 'PLAY ALL';
 	document.getElementById('play').onclick = playall;
+	scrollAlbumArt();
 }
 </script>
 <style>
@@ -231,12 +254,15 @@ header {
 	margin: 5px 0px 5px 0px;
 	padding: 0px;
 }
-#albumart img {
+img.albumart {
 	width: 300px;
-	float: right;
+	position: absolute;
+	right: 0;
 	margin: 100px;
 	border-style: double;
 	border-width: 20px;
+	transition: all 5s ease-in-out;
+	opacity: 0;
 }
 
 .song {
@@ -256,13 +282,9 @@ header {
 </head>
 <body>
 <header><?php echo basename(__DIR__) ?></header>
-<?php #Album art
-if ($img !== false) {
-echo '<section id="albumart">';
-echo "  <img src=\"$img\"></img>";
-echo '</section>';
-}
-?>
+<section id="arts">
+<?php echo $imgsHTML; ?>
+</section>
 <section id="controls">
 	<div id='controllabel'>Controls for playing all the songs</div>
 	<div>
