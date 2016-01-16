@@ -207,7 +207,7 @@ function scrollAlbumArt() {
 	var DELAY = 20;
 	var imgs = document.getElementsByClassName('albumart');
   var artsHolder = document.getElementById('arts');
-  var backgroundHolder = document.getElementById('songs');
+  var backgroundHolder = document.getElementsByTagName('header')[0];
 	if (imgs === undefined) return; //No images were found
   //DONT Display the first one
 	/*
@@ -233,7 +233,7 @@ function scrollAlbumArt() {
     if (getComputedStyle(artsHolder).display === 'none') {
       backgroundHolder.style.backgroundImage = 'url(' + imgs[current].src + ')';
       backgroundHolder.style.backgroundSize = '30%';
-      backgroundHolder.style.backgroundRepeat = 'space';
+      backgroundHolder.style.backgroundRepeat = 'round';
       backgroundHolder.style.backgroundPosition = 'top right';
     } else {
       imgs[current].style.opacity = '1';
@@ -256,6 +256,8 @@ header {
 	font-size: 3em;
 	text-shadow: 1px 1px gray;
   overflow-x: auto;
+  text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;
+  color: black;
 }
 #controllabel {
 	width: 190px;
@@ -304,7 +306,6 @@ img.albumart {
 .song h2 {
 	display: inline-block;
 	font-size: 1.2em;
-  text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;
 }
 
 </style>
