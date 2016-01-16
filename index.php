@@ -10,8 +10,9 @@ foreach ($dir as $file) {
 			<div><audio controls class="audio" preload="none" src="' . basename($file) . '">
 			Not supported
 			</audio></div></article>';
-	} else if (strpos($file, '.jpg') !== false) {
-		#Use the all jpg as the album cover
+	} else if (strpos($file, '.jpg') !== false 
+      || strpos($file, '.png') !== false) {
+		#Use the all jpg/png as the album cover
 		$imgsHTML .= '<img class="albumart" src="' . basename($file) . '"></img>';
   }
 }
@@ -205,24 +206,43 @@ function playall() { //Damn nice closure!
 function scrollAlbumArt() {
 	var DELAY = 20;
 	var imgs = document.getElementsByClassName('albumart');
+  var artsHolder = document.getElementById('arts');
+  var backgroundHolder = document.getElementById('songs');
 	if (imgs === undefined) return; //No images were found
-  //Display the first one
-	imgs[0].style.opacity = '1';
+  //DONT Display the first one
+	/*
+  imgs[0].style.opacity = '1';
 	if (imgs.length === 1) { 
 		//Only 1 was found just display it
 		return;
-	}
+  }
+  */
 	var current = 0;
 	function scrollNext() {
 		//Hide the currnet image and display the next while moving the iterator (current)
-		imgs[current].style.opacity = '0';
-		current++;
+		//Check if device width too small
+    if (getComputedStyle(artsHolder).display === 'none') {
+      //Do nothing
+    } else {
+      backgroundHolder.style.backgroundImage = '';
+      imgs[current].style.opacity = '0';
+		}
+    current++;
 		if (current >= imgs.length) current = 0;
-		imgs[current].style.opacity = '1';
+		//Display next image
+    if (getComputedStyle(artsHolder).display === 'none') {
+      backgroundHolder.style.backgroundImage = 'url(' + imgs[current].src + ')';
+      backgroundHolder.style.backgroundSize = '30%';
+      backgroundHolder.style.backgroundRepeat = 'space';
+      backgroundHolder.style.backgroundPosition = 'top right';
+    } else {
+      imgs[current].style.opacity = '1';
+    }
 		//Change to the next image after delay
 		setTimeout(scrollNext, DELAY*1000);
 	}
-	setTimeout(scrollNext, DELAY*1000);
+  scrollNext();
+	//setTimeout(scrollNext, DELAY*1000);
 }
 
 window.onload = function() {
@@ -235,6 +255,7 @@ window.onload = function() {
 header {
 	font-size: 3em;
 	text-shadow: 1px 1px gray;
+  overflow-x: auto;
 }
 #controllabel {
 	width: 190px;
@@ -249,10 +270,18 @@ header {
 	border: 3px gray solid;
 	width: auto;
 }
+#controls button {
+  margin: 3px 0px;
+}
 #currentsong {
 	display: none;
 	margin: 5px 0px 5px 0px;
 	padding: 0px;
+}
+@media all and (max-width: 760px) {
+  #arts {
+    display: none;
+  }
 }
 img.albumart {
 	width: 300px;
@@ -275,10 +304,16 @@ img.albumart {
 .song h2 {
 	display: inline-block;
 	font-size: 1.2em;
+  text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;
 }
 
 </style>
 <title><?php echo basename(__DIR__) ?></title>
+<link rel="shortcut icon" href="jazyserver.com/favicons/favicon.ico" />
+<link rel="icon" type="image/png" href="jazyserver.com/favicons/favicon-96x96.png" />
+<link rel="icon" type="image/png" href="jazyserver.com/favicons/favicon-32x32.png" />
+<meta name="author" content="Jazy Llerena" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 </head>
 <body>
 <header><?php echo basename(__DIR__) ?></header>
