@@ -286,8 +286,9 @@ header {
   }
 }
 img.albumart {
-	width: 300px;
-	position: absolute;
+	/*width: 300px;
+	Maintain original size*/
+  position: absolute;
 	right: 0;
 	margin: 100px;
 	border-style: double;
