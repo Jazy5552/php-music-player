@@ -2,6 +2,7 @@
 $dir = scandir(__DIR__);
 $imgsHTML = '';
 $songsHTML = '';
+$favicon = '';
 $i = 0;
 foreach ($dir as $file) {
 	if (strpos($file, '.mp3') !== false) {
@@ -14,14 +15,34 @@ foreach ($dir as $file) {
       || strpos($file, '.png') !== false) {
 		#Use the all jpg/png as the album cover
 		$imgsHTML .= '<img class="albumart" src="' . basename($file) . '"></img>';
+    #Use the first one as the favicon
+    if ($favicon === '') {
+      $favicon = '<link rel="icon" href="' . basename($file) . '" />';
+    }
   }
+}
+if ($favicon === '') {
+  #Use server wide favicons
+  $favicon = '
+<link rel="shortcut icon" href="http://jazyserver.com/favicons/favicon.ico" />
+<link rel="icon" type="image/png" href="http://jazyserver.com/favicons/favicon-96x96.png" />
+<link rel="icon" type="image/png" href="http://jazyserver.com/favicons/favicon-32x32.png" />
+  '
 }
 ?>
 
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
+<meta charset="UTF-8" />
+<?php echo $favicon ?>
+<!--
+<link rel="shortcut icon" href="http://jazyserver.com/favicons/favicon.ico" />
+<link rel="icon" type="image/png" href="http://jazyserver.com/favicons/favicon-96x96.png" />
+<link rel="icon" type="image/png" href="http://jazyserver.com/favicons/favicon-32x32.png" />
+-->
+<meta name="author" content="Jazy Llerena" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <script>	
 function shuffle(a) { //Shuffles the array
 	var i = a.length, x, j;
@@ -311,11 +332,6 @@ img.albumart {
 
 </style>
 <title><?php echo basename(__DIR__) ?></title>
-<link rel="shortcut icon" href="jazyserver.com/favicons/favicon.ico" />
-<link rel="icon" type="image/png" href="jazyserver.com/favicons/favicon-96x96.png" />
-<link rel="icon" type="image/png" href="jazyserver.com/favicons/favicon-32x32.png" />
-<meta name="author" content="Jazy Llerena" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 </head>
 <body>
 <header><?php echo basename(__DIR__) ?></header>
