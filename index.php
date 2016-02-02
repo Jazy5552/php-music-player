@@ -27,7 +27,7 @@ if ($favicon === '') {
 <link rel="shortcut icon" href="http://jazyserver.com/favicons/favicon.ico" />
 <link rel="icon" type="image/png" href="http://jazyserver.com/favicons/favicon-96x96.png" />
 <link rel="icon" type="image/png" href="http://jazyserver.com/favicons/favicon-32x32.png" />
-  '
+  ';
 }
 ?>
 
