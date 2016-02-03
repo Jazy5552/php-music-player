@@ -309,6 +309,7 @@ header {
 img.albumart {
 	/*width: 300px;
 	Maintain original size*/
+  max-width: 400px;
   position: absolute;
 	right: 0;
 	margin: 100px;
@@ -328,6 +329,7 @@ img.albumart {
 .song h2 {
 	display: inline-block;
 	font-size: 1.2em;
+  text-shadow: 1px 0px white, -1px 0px white, 0px 1px white, 0px -1px white;
 }
 
 </style>
