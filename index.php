@@ -237,7 +237,7 @@ function scrollAlbumArt() {
 	var imgs = document.getElementsByClassName('albumart');
   var artsHolder = document.getElementById('arts');
   var backgroundHolder = document.getElementsByTagName('header')[0];
-	if (imgs === undefined) return; //No images were found
+	if (imgs === undefined || imgs.length < 1) return; //No images were found
   //DONT Display the first one
 	/*
   imgs[0].style.opacity = '1';
