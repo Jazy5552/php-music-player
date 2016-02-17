@@ -2,6 +2,7 @@
 $dir = scandir(__DIR__);
 $imgsHTML = '';
 $songsHTML = '';
+$directoriesHTML = '';
 $favicon = '';
 $i = 0;
 foreach ($dir as $file) {
@@ -19,6 +20,13 @@ foreach ($dir as $file) {
     if ($favicon === '') {
       $favicon = '<link rel="icon" href="' . basename($file) . '" />';
     }
+  } else if (is_dir($file) && $file !== '.' && $file !== '..') {
+    if (!file_exists($file . 'index.php')) {
+      copy('./index.php', $file . '/index.php');
+    }
+    $directoriesHTML .= '<article class="dir">
+    <div><h2 id="' . $file . '">Dir: ' . $file . '</h2></div>
+    </article>';
   }
 }
 if ($favicon === '') {
@@ -265,11 +273,22 @@ function scrollAlbumArt() {
   scrollNext();
 	//setTimeout(scrollNext, DELAY*1000);
 }
+function attachDirs() {
+  var dirs = document.getElementsByClassName('dir');
+  for (var i=0; i<dirs.length; i++) {
+    var dir = dirs[i].getElementsByTagName('h2')[0];
+    dir.addEventListener('click', function() {
+      window.location = window.location + dir.getAttribute('id');
+    });
+  }
+
+}
 
 window.onload = function() {
 	document.getElementById('play').innerHTML = 'PLAY ALL';
 	document.getElementById('play').onclick = playall;
 	scrollAlbumArt();
+  attachDirs();
 }
 </script>
 <style>
@@ -318,6 +337,21 @@ img.albumart {
 	transition: all 5s ease-in-out;
 	opacity: 0;
 }
+.dir h2:hover {
+  background-color: #111;
+}
+.dir {
+  margin: auto;
+	padding: 10px 0px 10px 0px;
+}
+.dir h2 {
+	display: inline-block;
+	font-size: 1.2em;
+  text-shadow: 1px 0px white, -1px 0px white, 0px 1px white, 0px -1px white;
+  padding: 2px 2px 2px 2px;
+  border: solid 2px black;
+  transition: all 1s;
+}
 
 .song {
 	margin: auto;
@@ -354,6 +388,9 @@ img.albumart {
 </section>
 <section id="songs">
 <?php echo $songsHTML; ?>
+</section>
+<section id="dirs">
+<?php echo $directoriesHTML; ?>
 </section>
 </body>
 </html>
