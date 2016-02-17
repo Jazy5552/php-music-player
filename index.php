@@ -24,6 +24,11 @@ foreach ($dir as $file) {
     $directoriesHTML .= '<article class="dir">
     <div><h2 id="' . $file . '">Dir: ' . $file . '</h2></div>
     </article>';
+  } else if ($file !== '.' && $file !== '..') {
+    //Display file name
+    $directoriesHTML .= '<article class="dir">
+    <div><h2 id="' . $file . '">File: ' . $file . '</h2></div>
+    </article>';
   }
 }
 if ($favicon === '') {
@@ -298,7 +303,9 @@ function attachDirs() {
   for (var i=0; i<dirs.length; i++) {
     var dir = dirs[i].getElementsByTagName('h2')[0];
     dir.addEventListener('click', function() {
-      window.location = window.location + this.getAttribute('id');
+      var loc = window.location.href.split('/');
+      loc.pop();
+      window.location = loc.join('/') + '/' + this.getAttribute('id');
     });
   }
 
