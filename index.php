@@ -40,14 +40,18 @@ if ($favicon === '') {
   ';
 }
 //Will be adding index.php files RECURSIVELY WARNING
-function SearchForPotentialAlbums($dirname) {
+function SearchForPotentialAlbums($dirname, $x) {
+  if ($x > 3) { 
+    //Limit recursion
+    return;
+  }
   $d = scandir($dirname);
   foreach ($d as $file) {
     if (is_dir($dirname . '/' . $file) && $file !== '.' && $file !== '..') {
       if (!file_exists($dirname . '/' . $file . '/index.php') && HasSongs($dirname . '/' . $file)) {
         copy('./index.php', $dirname . '/' . $file . '/index.php');
       }
-      SearchForPotentialAlbums($dirname . '/' . $file);
+      SearchForPotentialAlbums($dirname . '/' . $file, ++$x);
     }
   }
 }
@@ -61,7 +65,7 @@ function HasSongs($dirname) {
   return false;
 }
 //WARNING FUCKING SAVAGE AHEAD
-SearchForPotentialAlbums(__DIR__);
+SearchForPotentialAlbums(__DIR__, 0);
 ?>
 
 <!DOCTYPE html>
