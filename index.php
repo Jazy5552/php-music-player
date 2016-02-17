@@ -20,10 +20,7 @@ foreach ($dir as $file) {
     if ($favicon === '') {
       $favicon = '<link rel="icon" href="' . basename($file) . '" />';
     }
-  } else if (is_dir($file) && $file !== '.' && $file !== '..') {
-    if (!file_exists($file . 'index.php')) {
-      copy('./index.php', $file . '/index.php');
-    }
+  } else if (is_dir($file) && $file !== '.') {
     $directoriesHTML .= '<article class="dir">
     <div><h2 id="' . $file . '">Dir: ' . $file . '</h2></div>
     </article>';
@@ -37,6 +34,29 @@ if ($favicon === '') {
 <link rel="icon" type="image/png" href="http://jazyserver.com/favicons/favicon-32x32.png" />
   ';
 }
+//Will be adding index.php files RECURSIVELY WARNING
+function SearchForPotentialAlbums($dirname) {
+  $d = scandir($dirname);
+  foreach ($d as $file) {
+    if (is_dir($dirname . '/' . $file) && $file !== '.' && $file !== '..') {
+      if (!file_exists($dirname . '/' . $file . '/index.php') && HasSongs($dirname . '/' . $file)) {
+        copy('./index.php', $dirname . '/' . $file . '/index.php');
+      }
+      SearchForPotentialAlbums($dirname . '/' . $file);
+    }
+  }
+}
+function HasSongs($dirname) {
+  $d = scandir($dirname);
+  foreach ($d as $file) {
+    if (strpos($file, '.mp3') !== false) {
+      return true;
+    }
+  }
+  return false;
+}
+//WARNING FUCKING SAVAGE AHEAD
+SearchForPotentialAlbums(__DIR__);
 ?>
 
 <!DOCTYPE html>
@@ -278,7 +298,7 @@ function attachDirs() {
   for (var i=0; i<dirs.length; i++) {
     var dir = dirs[i].getElementsByTagName('h2')[0];
     dir.addEventListener('click', function() {
-      window.location = window.location + dir.getAttribute('id');
+      window.location = window.location + this.getAttribute('id');
     });
   }
 
@@ -342,7 +362,7 @@ img.albumart {
 }
 .dir {
   margin: auto;
-	padding: 10px 0px 10px 0px;
+	padding: 2px 0px 2px 0px;
 }
 .dir h2 {
 	display: inline-block;
