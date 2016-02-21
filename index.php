@@ -51,7 +51,7 @@ function SearchForPotentialAlbums($dirname, $x) {
       if (!file_exists($dirname . '/' . $file . '/index.php') && HasSongs($dirname . '/' . $file)) {
         copy('./index.php', $dirname . '/' . $file . '/index.php');
       }
-      SearchForPotentialAlbums($dirname . '/' . $file, ++$x);
+      SearchForPotentialAlbums($dirname . '/' . $file, $x + 1);
     }
   }
 }
