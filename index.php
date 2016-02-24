@@ -22,12 +22,12 @@ foreach ($dir as $file) {
     }
   } else if (is_dir($file) && $file !== '.') {
     $directoriesHTML .= '<article class="dir">
-    <div><h2 id="' . $file . '">Dir: ' . $file . '</h2></div>
+    <div><h2 class="defaultCursor" id="' . $file . '">Dir: ' . $file . '</h2></div>
     </article>';
   } else if ($file !== '.' && $file !== '..') {
     //Display file name
-    $directoriesHTML .= '<article class="dir">
-    <div><h2 id="' . $file . '">File: ' . $file . '</h2></div>
+    $directoriesHTML .= '<article class="file">
+    <div><h2 class="defaultCursor" id="' . $file . '">File: ' . $file . '</h2></div>
     </article>';
   }
 }
@@ -368,8 +368,27 @@ img.albumart {
 	transition: all 5s ease-in-out;
 	opacity: 0;
 }
+.defaultCursor {
+	cursor: pointer;
+}
+.file h2:hover {
+	background-color: #AAF;
+}
+.file {
+	margin: auto;
+	padding: 2px 0px 2px 0px;
+}
+.file h2 {
+	display: inline-block;
+	font-size: 1.2em;
+  text-shadow: 1px 0px white, -1px 0px white, 0px 1px white, 0px -1px white;
+  padding: 2px 2px 2px 2px;
+  border: solid 2px blue;
+  transition: all 1s;
+}
+
 .dir h2:hover {
-  background-color: #111;
+  background-color: #AAA;
 }
 .dir {
   margin: auto;
