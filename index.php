@@ -384,7 +384,8 @@ img.albumart {
   text-shadow: 1px 0px white, -1px 0px white, 0px 1px white, 0px -1px white;
   padding: 2px 2px 2px 2px;
   border: solid 2px blue;
-  transition: all 1s;
+	transition: all 1s;
+	user-select: none;
 }
 
 .dir h2:hover {
@@ -400,7 +401,8 @@ img.albumart {
   text-shadow: 1px 0px white, -1px 0px white, 0px 1px white, 0px -1px white;
   padding: 2px 2px 2px 2px;
   border: solid 2px black;
-  transition: all 1s;
+	transition: all 1s;
+	user-select: none;
 }
 
 .song {
