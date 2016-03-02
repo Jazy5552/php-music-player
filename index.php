@@ -44,6 +44,7 @@ if ($favicon === '') {
 }
 //Will be adding index.php files RECURSIVELY WARNING
 function SearchForPotentialAlbums($dirname, $x) {
+$filename = basename(__FILE__);
   if ($x < 1) { 
     //Stop recursion
     return;
@@ -309,13 +310,17 @@ function scrollAlbumArt() {
 	//setTimeout(scrollNext, DELAY*1000);
 }
 function attachDirs() {
-  var dirs = document.getElementsByClassName('dir');
+	//And files
+  var dirs = document.querySelectorAll('.file, .dir');
   for (var i=0; i<dirs.length; i++) {
     var dir = dirs[i].getElementsByTagName('h2')[0];
+		//console.log(dir.getAttribute('id'));
     dir.addEventListener('click', function() {
       var loc = window.location.href.split('/');
       loc.pop();
-      window.location = loc.join('/') + '/' + this.getAttribute('id');
+			var newloc = loc.join('/') + '/' + this.getAttribute('id');
+			//console.log(newloc);
+			window.location = newloc;
     });
   }
 
@@ -375,7 +380,14 @@ img.albumart {
 	opacity: 0;
 }
 .defaultCursor {
+	-webkit-cursor: pointer;
+	-moz-cursor: pointer;
+	-ms-cursor: pointer;
 	cursor: pointer;
+	-webkit-user-select: none;  
+  -moz-user-select: none;    
+  -ms-user-select: none;      
+  user-select: none;
 }
 .file h2:hover {
 	background-color: #AAF;
