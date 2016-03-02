@@ -6,4 +6,7 @@ To use simply place into a directory with mp3 files on your webserver.
 Can now select loop settings for single song loop or while directory loop.
 
 Can now click on the song name to skip to it during PLAY ALL sequence.
+The index file will now recursively search for music in directories and try to copy itself. WARNING: May throw errors if permissions are insufficient, and may cause performance hit if page is loaded frequently
+
+TODO: Add download button next to songs
 
