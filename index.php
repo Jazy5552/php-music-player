@@ -1,5 +1,6 @@
 <?php
 $dir = scandir(__DIR__);
+$filename = basename(__FILE__);
 $imgsHTML = '';
 $songsHTML = '';
 $directoriesHTML = '';
@@ -24,7 +25,9 @@ foreach ($dir as $file) {
     $directoriesHTML .= '<article class="dir">
     <div><h2 class="defaultCursor" id="' . $file . '">Dir: ' . $file . '</h2></div>
     </article>';
-  } else if ($file !== '.' && $file !== '..') {
+	} else if ($file !== '.' 
+		&& $file !== '..' 
+		&& $file !== $filename) {
     //Display file name
     $directoriesHTML .= '<article class="file">
     <div><h2 class="defaultCursor" id="' . $file . '">File: ' . $file . '</h2></div>
@@ -41,17 +44,20 @@ if ($favicon === '') {
 }
 //Will be adding index.php files RECURSIVELY WARNING
 function SearchForPotentialAlbums($dirname, $x) {
-  if ($x > 3) { 
-    //Limit recursion
+  if ($x < 1) { 
+    //Stop recursion
     return;
   }
   $d = scandir($dirname);
   foreach ($d as $file) {
-    if (is_dir($dirname . '/' . $file) && $file !== '.' && $file !== '..') {
-      if (!file_exists($dirname . '/' . $file . '/index.php') && HasSongs($dirname . '/' . $file)) {
-        copy('./index.php', $dirname . '/' . $file . '/index.php');
+		if (is_dir($dirname . '/' . $file) 
+			&& $file !== '.' 
+			&& $file !== '..') {
+				if (!file_exists($dirname . '/' . $file . '/' . $filename) 
+					&& HasSongs($dirname . '/' . $file)) {
+        copy('./' . $filename, $dirname . '/' . $file . '/' . $filename);
       }
-      SearchForPotentialAlbums($dirname . '/' . $file, $x + 1);
+      SearchForPotentialAlbums($dirname . '/' . $file, $x - 1);
     }
   }
 }
@@ -65,7 +71,7 @@ function HasSongs($dirname) {
   return false;
 }
 //WARNING FUCKING SAVAGE AHEAD
-SearchForPotentialAlbums(__DIR__, 0);
+SearchForPotentialAlbums(__DIR__, 3);
 ?>
 
 <!DOCTYPE html>
