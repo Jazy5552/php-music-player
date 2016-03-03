@@ -8,11 +8,21 @@ $favicon = '';
 $i = 0;
 foreach ($dir as $file) {
 	if (strpos($file, '.mp3') !== false) {
-		$songsHTML .= '<article class="song">
-			<div><h2 id="' . $i++ . '">' . substr($file, 0, strpos($file, '.mp3')) . '</h2></div>
-			<div><audio controls class="audio" preload="none" src="' . basename($file) . '">
-			Not supported
-			</audio></div></article>';
+		$songsHTML .= '
+    <article class="song">
+			<div>
+        <h2 id="' . $i++ . '">' 
+        . substr($file, 0, strpos($file, '.mp3')) 
+        . '</h2>
+      </div>
+			<div>
+        <audio controls class="audio" preload="none" src="' 
+        . basename($file) . '">
+			  Not Supported
+			  </audio>
+        <i class="fa fa-arrow-circle-o-down fa-2x"></i>
+      </div>
+    </article>';
 	} else if (strpos($file, '.jpg') !== false 
       || strpos($file, '.png') !== false) {
 		#Use the all jpg/png as the album cover
@@ -35,7 +45,7 @@ foreach ($dir as $file) {
   }
 }
 if ($favicon === '') {
-  #Use server wide favicons
+  #Use MY server wide favicons, feel free to change to yours
   $favicon = '
 <link rel="shortcut icon" href="http://jazyserver.com/favicons/favicon.ico" />
 <link rel="icon" type="image/png" href="http://jazyserver.com/favicons/favicon-96x96.png" />
@@ -87,6 +97,8 @@ SearchForPotentialAlbums(__DIR__, 3);
 -->
 <meta name="author" content="Jazy Llerena" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<!-- CDN Link with some cool free icons! -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
 <script>	
 function shuffle(a) { //Shuffles the array
 	var i = a.length, x, j;
@@ -118,11 +130,17 @@ function playall() { //Damn nice closure!
 	var loop = false; //This is for all songs loop
 	var shuffled = false; //Keep track of shuffle
 	var oTitle = document.title;
+  var originalClass; //This is for the h2 headers and also disgusting
 	for (var i = 0; i < Songs.length; i++) {
 		Songs[i].pause();
 		Songs[i].parentNode.parentNode.style.opacity = notPlayingOpacity;
 		Songs[i].style.display = 'none';
-		Songs[i].parentNode.parentNode.getElementsByTagName('h2')[0].onclick = function(){onClick(this.id);}; //Allow to click to jump to song
+    //Save the original classname for when stop is hit
+		originalClass = Songs[i].parentNode.parentNode.getElementsByTagName('h2')[0].className;
+		Songs[i].parentNode.parentNode.getElementsByTagName('h2')[0].className
+      = originalClass + ' defaultCursor';
+		Songs[i].parentNode.parentNode.getElementsByTagName('h2')[0].onclick 
+      = function(){onClick(this.id);}; //Allow to click to jump to song
 	}
 	function updateCurrentSong() {
 		console.log(CurrentSong + ' ' + CurrentAudio + ' ' + Songs.length + ' ' + Songs[CurrentSong].src);
@@ -208,6 +226,9 @@ function playall() { //Damn nice closure!
 			Songs[i].currentTime = 0;
 			Songs[i].removeEventListener('ended', onEnded);
 			Songs[i].parentNode.parentNode.removeAttribute('style');
+      //Remove to jump click
+      Songs[i].parentNode.parentNode.getElementsByTagName('h2')[0].onclick = '';
+      songs[i].parentNode.parentNode.className = originalClass;
 			Songs[i].removeAttribute('style');
 		}
 		document.title = oTitle;
@@ -323,7 +344,6 @@ function attachDirs() {
 			window.location = newloc;
     });
   }
-
 }
 
 window.onload = function() {
@@ -340,6 +360,18 @@ header {
   overflow-x: auto;
   text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;
   color: black;
+}
+.fa-arrow-circle-o-down {
+  position: relative;
+  top: -3px; /*The shit i put up with...*/
+	-webkit-cursor: pointer;
+	-moz-cursor: pointer;
+	-ms-cursor: pointer;
+	cursor: pointer;
+  transition: all 1s;
+}
+.fa-arrow-circle-o-down:hover {
+  color: #181;
 }
 #controllabel {
 	width: 190px;
@@ -434,6 +466,10 @@ img.albumart {
 	display: inline-block;
 	font-size: 1.2em;
   text-shadow: 1px 0px white, -1px 0px white, 0px 1px white, 0px -1px white;
+  transition: all 1s;
+}
+.song h2:hover {
+  
 }
 
 </style>
