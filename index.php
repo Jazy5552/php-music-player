@@ -228,7 +228,8 @@ function playall() { //Damn nice closure!
 			Songs[i].parentNode.parentNode.removeAttribute('style');
       //Remove to jump click
       Songs[i].parentNode.parentNode.getElementsByTagName('h2')[0].onclick = '';
-      songs[i].parentNode.parentNode.className = originalClass;
+      Songs[i].parentNode.parentNode.getElementsByTagName('h2')[0].className
+        = originalClass;
 			Songs[i].removeAttribute('style');
 		}
 		document.title = oTitle;
@@ -371,7 +372,7 @@ header {
   transition: all 1s;
 }
 .fa-arrow-circle-o-down:hover {
-  color: #181;
+  color: #181; /*Nice color for download?*/
 }
 #controllabel {
 	width: 190px;
@@ -468,8 +469,8 @@ img.albumart {
   text-shadow: 1px 0px white, -1px 0px white, 0px 1px white, 0px -1px white;
   transition: all 1s;
 }
-.song h2:hover {
-  
+.song h2.defaultCursor:hover {
+  color: #55F; /*Pretty little color*/
 }
 
 </style>
