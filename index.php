@@ -1,4 +1,17 @@
 <?php
+if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['down'])) {
+  //Client wants to download a file lets give it to em
+  $file = $_GET['down'];
+  if (strpos($file, '.mp3') === false) {
+    //Not an mp3? fk off
+    die('Unauthorized');
+  }
+  header('Content-Type: application/octet-stream');
+  header("Content-Transfer-Encoding: Binary"); 
+  header("Content-disposition: attachment; filename=\"" . $file . "\""); 
+  readfile($file); // do the double-download-dance (dirty but worky)
+  die();
+}
 $dir = scandir(__DIR__);
 $filename = basename(__FILE__);
 $imgsHTML = '';
@@ -20,7 +33,7 @@ foreach ($dir as $file) {
         . basename($file) . '">
 			  Not Supported
 			  </audio>
-        <i class="fa fa-arrow-circle-o-down fa-2x"></i>
+        <i class="download-button fa fa-arrow-circle-o-down fa-2x"></i>
       </div>
     </article>';
 	} else if (strpos($file, '.jpg') !== false 
@@ -346,12 +359,25 @@ function attachDirs() {
     });
   }
 }
+function attachDownloads() {
+  var dButtons = document.getElementsByClassName('download-button');
+  for (var i=0; i<dButtons.length; i++) {
+    dButtons[i].addEventListener('click', function() {
+      //Download the song (Use audio source?)
+      var h = this.parentNode.parentNode.getElementsByTagName('h2')[0];
+      //Check this shit out right here, ghetto ass get request
+      var loc = window.location.href + '?down=' + h.innerHTML + '.mp3';
+      window.location = loc; //rip
+    });
+  }
+}
 
 window.onload = function() {
 	document.getElementById('play').innerHTML = 'PLAY ALL';
 	document.getElementById('play').onclick = playall;
 	scrollAlbumArt();
   attachDirs();
+  attachDownloads();
 }
 </script>
 <style>
