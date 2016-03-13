@@ -2,13 +2,14 @@
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['down'])) {
   //Client wants to download a file lets give it to em
   $file = $_GET['down'];
-  if (strpos($file, '.mp3') === false) {
+  if (strpos($file, '.mp3') === false || file_exists($file) === false) {
     //Not an mp3? fk off
     die('Unauthorized');
   }
   header('Content-Type: application/octet-stream');
-  header("Content-Transfer-Encoding: Binary"); 
-  header("Content-disposition: attachment; filename=\"" . $file . "\""); 
+  header('Content-Transfer-Encoding: Binary'); 
+	header('Content-Disposition: attachment; filename="' . $file . '"'); 
+	header('Content-Length: ' . filesize($file));
   readfile($file); // do the double-download-dance (dirty but worky)
   die();
 }
