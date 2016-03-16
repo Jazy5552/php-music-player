@@ -38,6 +38,7 @@ foreach ($dir as $file) {
       </div>
     </article>';
 	} else if (strpos($file, '.jpg') !== false 
+      || strpos($file, '.jpeg') !== false
       || strpos($file, '.png') !== false) {
 		#Use the all jpg/png as the album cover
 		$imgsHTML .= '<img class="albumart" src="' . basename($file) . '"></img>';
