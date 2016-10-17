@@ -70,7 +70,8 @@ function CreateHTMLCode($odir, $filename, $superrecursive,
 				}
 			} else {
 				$directoriesHTML .= '<article class="dir">
-				<div><h2 class="defaultCursor" id="' . $file . '">Dir: ' . substr($file, 2) . '</h2></div>
+				<div><h2 class="defaultCursor" id="' . $file . '"><i class="fa fa-folder-open" aria-hidden="true"></i>
+        ' . substr($file, 2) . '</h2></div>
 				</article>';
 			}
 		} else if (basename($file) !== '.' 
@@ -79,7 +80,8 @@ function CreateHTMLCode($odir, $filename, $superrecursive,
 			&& basename($file) !== $filename) {
 			//Display file name
 			$directoriesHTML .= '<article class="file">
-			<div><h2 class="defaultCursor" id="' . $file . '">File: ' . substr($file, 2) . '</h2></div>
+			<div><h2 class="defaultCursor" id="' . $file . '"><i class="fa fa-file-o" aria-hidden="true"></i>
+      ' . substr($file, 2) . '</h2></div>
 			</article>';
 		}
 	}
@@ -147,7 +149,7 @@ SearchForPotentialAlbums(__DIR__, $INFECTDEPTH);
 <meta name="author" content="Jazy Llerena" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <!-- CDN Link with some cool free icons! -->
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
 <script>	
 function shuffle(a) { //Shuffles the array
 	var i = a.length, x, j;
@@ -502,6 +504,9 @@ img.albumart {
 	padding: 2px 0px 2px 0px;
 }
 .file h2 {
+  margin: 0px;
+  margin-top: 2px;
+  margin-bottom: 2px;
 	display: inline-block;
 	font-size: 1.2em;
   text-shadow: 1px 0px white, -1px 0px white, 0px 1px white, 0px -1px white;
@@ -519,6 +524,9 @@ img.albumart {
 	padding: 2px 0px 2px 0px;
 }
 .dir h2 {
+  margin: 0px;
+  margin-top: 2px;
+  margin-bottom: 2px;
 	display: inline-block;
 	font-size: 1.2em;
   text-shadow: 1px 0px white, -1px 0px white, 0px 1px white, 0px -1px white;
