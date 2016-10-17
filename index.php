@@ -59,10 +59,12 @@ function CreateHTMLCode($odir, $filename, $superrecursive,
 				$favicon = '<link rel="icon" href="' . $file . '" />';
 			}
 		} else if (is_dir($file) && basename($file) !== '.') {
-			if ($superrecursive && basename($file) !== '..') {
-				//Run this function into the directory
-				CreateHTMLCode($file . '/', $filename, $superrecursive, 
-					$imgsHTML, $songsHTML, $directoriesHTML, $favicon, $i, $deep);
+			if ($superrecursive) {
+				if (basename($file) !== '..') { //Dont show ../ directories
+					//Run this function into the directory
+					CreateHTMLCode($file . '/', $filename, $superrecursive, 
+						$imgsHTML, $songsHTML, $directoriesHTML, $favicon, $i, $deep);
+				}
 			} else {
 				$directoriesHTML .= '<article class="dir">
 				<div><h2 class="defaultCursor" id="' . $file . '">Dir: ' . $file . '</h2></div>
@@ -70,7 +72,7 @@ function CreateHTMLCode($odir, $filename, $superrecursive,
 			}
 		} else if (basename($file) !== '.' 
 			&& basename($file) !== '..' 
-			&& is_dir($file) !== true
+			&& $superrecursive !== true //Dont show files/dirs when in recursive mode
 			&& basename($file) !== $filename) {
 			//Display file name
 			$directoriesHTML .= '<article class="file">
