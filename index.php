@@ -169,8 +169,8 @@ function playall() { //Damn nice closure!
 	var Songs = document.getElementsByClassName('audio');
 	Songs = Array.prototype.slice.call(Songs, 0);
 	var OriginalSongs = Songs.slice(0); //clone
-	var bPlayText = 'PLAY';
-	var bPausText = 'PAUSE';
+	var bPlayText = '<i class="fa fa-play" aria-hidden="true"></i>'; //PLAY
+	var bPausText = '<i class="fa fa-pause" aria-hidden="true"></i>'; //PAUSE
 	var bDefaText = document.getElementById('play').innerHTML;
 	var bLoopSingText = 'LOOP SINGLE';
 	var bLoopAllText = 'LOOP ALL';
@@ -421,7 +421,6 @@ function disableRecursiveMode() {
 }
 
 window.onload = function() {
-	document.getElementById('play').innerHTML = 'PLAY ALL';
 	document.getElementById('play').onclick = playall;
 	scrollAlbumArt();
   attachDirs();
@@ -565,12 +564,12 @@ img.albumart {
 	<div id='controllabel'>Controls for playing all the songs</div>
 	<div>
 		<span><h2 id="cslabel"></h2><audio id="currentsong" preload="auto" controls></audio></span>
-		<button type="button" id="play"><!--Set by js--></button>
-		<button type="button" id="next">NEXT</button>
-		<button type="button" id="previous">PREVIOUS</button>
-		<button type="button" id="stop">STOP</button>
+		<button type="button" id="previous"><!--PREVIOUS--><i class="fa fa-step-backward" aria-hidden="true"></i></button>
+		<button type="button" id="play"><i class="fa fa-play" aria-hidden="true"></i></button>
+		<button type="button" id="next"><!--NEXT--><i class="fa fa-step-forward" aria-hidden="true"></i></button>
+		<button type="button" id="stop"><!--STOP--><i class="fa fa-stop" aria-hidden="true"></i></button>
+		<button type="button" id="shuffle"><!--SHUFFLE--><i class="fa fa-random" aria-hidden="true"></i></button>
 		<button type="button" id="loop">LOOP OFF</button>
-		<button type="button" id="shuffle">SHUFFLE</button>
 	</div>
 </section>
 <section id="songs">
