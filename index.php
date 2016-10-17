@@ -13,6 +13,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['down'])) {
   readfile($file); // do the double-download-dance (dirty but worky)
   die();
 }
+//WARNING Change this depending on what you want the file to do
+$INFECTDEPTH = 3; //Depth at which this index file will clone itself into directories 
+//Set INFECTDEPTH to 0 to prevent this file from cloning itself
 $superrecursive = isset($_GET['recursive']); #If recursive then form a huge music list
 $_dir = './';
 $_filename = basename(__FILE__); #Name of the php file to be ignored
@@ -102,7 +105,7 @@ $filename = basename(__FILE__);
 			&& $file !== '.' 
 			&& $file !== '..') {
 				if (!file_exists($dirname . '/' . $file . '/' . $filename) 
-					&& HasSongs($dirname . '/' . $file)) {
+					&& HasSongs($dirname . '/' . $file)) { 
         copy('./' . $filename, $dirname . '/' . $file . '/' . $filename);
       }
       SearchForPotentialAlbums($dirname . '/' . $file, $x - 1);
@@ -127,7 +130,7 @@ CreateHTMLCode($_dir, $_filename, $superrecursive,
 	$_imgsHTML, $_songsHTML, $_directoriesHTML, $_favicon, $_i, $_deep);
 
 //WARNING FUCKING SAVAGE AHEAD
-SearchForPotentialAlbums(__DIR__, 3);
+SearchForPotentialAlbums(__DIR__, $INFECTDEPTH);
 ?>
 
 <!DOCTYPE html>
