@@ -404,6 +404,16 @@ function attachDownloads() {
   }
 }
 
+function enableRecursiveMode() {
+	if (window.location.href.indexOf('?recursive') === -1) {
+		window.location.href = window.location.href + '?recursive';
+	}
+}
+function disableRecursiveMode() {
+	var href = window.location.href;
+	window.location.href = href.substring(0, href.indexOf('?recursive'));
+}
+
 window.onload = function() {
 	document.getElementById('play').innerHTML = 'PLAY ALL';
 	document.getElementById('play').onclick = playall;
