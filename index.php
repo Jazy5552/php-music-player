@@ -67,7 +67,7 @@ function CreateHTMLCode($odir, $filename, $superrecursive,
 				}
 			} else {
 				$directoriesHTML .= '<article class="dir">
-				<div><h2 class="defaultCursor" id="' . $file . '">Dir: ' . $file . '</h2></div>
+				<div><h2 class="defaultCursor" id="' . $file . '">Dir: ' . substr($file, 2) . '</h2></div>
 				</article>';
 			}
 		} else if (basename($file) !== '.' 
@@ -76,7 +76,7 @@ function CreateHTMLCode($odir, $filename, $superrecursive,
 			&& basename($file) !== $filename) {
 			//Display file name
 			$directoriesHTML .= '<article class="file">
-			<div><h2 class="defaultCursor" id="' . $file . '">File: ' . $file . '</h2></div>
+			<div><h2 class="defaultCursor" id="' . $file . '">File: ' . substr($file, 2) . '</h2></div>
 			</article>';
 		}
 	}
