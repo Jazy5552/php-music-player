@@ -13,59 +13,79 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['down'])) {
   readfile($file); // do the double-download-dance (dirty but worky)
   die();
 }
-$dir = scandir(__DIR__);
-$filename = basename(__FILE__);
-$imgsHTML = '';
-$songsHTML = '';
-$directoriesHTML = '';
-$favicon = '';
-$i = 0;
-foreach ($dir as $file) {
-	if (strpos($file, '.mp3') !== false) {
-		$songsHTML .= '
-    <article class="song">
-			<div>
-        <h2 id="' . $i++ . '">' 
-        . substr($file, 0, strpos($file, '.mp3')) 
-        . '</h2>
-      </div>
-			<div>
-        <audio controls class="audio" preload="none" src="' 
-        . basename($file) . '">
-			  Not Supported
-			  </audio>
-        <i class="download-button fa fa-arrow-circle-o-down fa-2x"></i>
-      </div>
-    </article>';
-	} else if (strpos($file, '.jpg') !== false 
-      || strpos($file, '.jpeg') !== false
-      || strpos($file, '.png') !== false) {
-		#Use the all jpg/png as the album cover
-		$imgsHTML .= '<img class="albumart" src="' . basename($file) . '"></img>';
-    #Use the first one as the favicon
-    if ($favicon === '') {
-      $favicon = '<link rel="icon" href="' . basename($file) . '" />';
-    }
-  } else if (is_dir($file) && $file !== '.') {
-    $directoriesHTML .= '<article class="dir">
-    <div><h2 class="defaultCursor" id="' . $file . '">Dir: ' . $file . '</h2></div>
-    </article>';
-	} else if ($file !== '.' 
-		&& $file !== '..' 
-		&& $file !== $filename) {
-    //Display file name
-    $directoriesHTML .= '<article class="file">
-    <div><h2 class="defaultCursor" id="' . $file . '">File: ' . $file . '</h2></div>
-    </article>';
-  }
-}
-if ($favicon === '') {
-  #Use MY server wide favicons, feel free to change to yours
-  $favicon = '
-<link rel="shortcut icon" href="http://jazyserver.com/favicons/favicon.ico" />
-<link rel="icon" type="image/png" href="http://jazyserver.com/favicons/favicon-96x96.png" />
-<link rel="icon" type="image/png" href="http://jazyserver.com/favicons/favicon-32x32.png" />
-  ';
+$superrecursive = isset($_GET['recursive']); #If recursive then form a huge music list
+$_dir = './';
+$_filename = basename(__FILE__); #Name of the php file to be ignored
+$_imgsHTML = '';
+$_songsHTML = '';
+$_directoriesHTML = '';
+$_favicon = '';
+$_i = 0; #Used as the ID for the songs
+$_deep = 10; #Limit recursions
+
+function CreateHTMLCode($odir, $filename, $superrecursive, 
+	&$imgsHTML, &$songsHTML, &$directoriesHTML, &$favicon, &$i, &$deep) {
+	if ($deep < 1) { //Recursion control
+		return;
+	}
+	$deep--;
+
+	$dir = scandir($odir);
+	foreach ($dir as $file) {
+		$file = $odir . $file;
+		if (strpos($file, '.mp3') !== false) {
+			$songsHTML .= '
+			<article class="song">
+				<div>
+					<h2 id="' . $i++ . '">' 
+					. substr($file, 2, strpos($file, '.mp3')-2) #Change to basename and use listed items
+					. '</h2>
+				</div>
+				<div>
+					<audio controls class="audio" preload="none" src="' 
+					. $file . '">
+					Not Supported
+					</audio>
+					<i class="download-button fa fa-arrow-circle-o-down fa-2x"></i>
+				</div>
+			</article>';
+		} else if (strpos($file, '.jpg') !== false 
+				|| strpos($file, '.jpeg') !== false
+				|| strpos($file, '.png') !== false) {
+			#Use the all jpg/png as the album cover
+			$imgsHTML .= '<img class="albumart" src="' . $file . '"></img>';
+			#Use the first one as the favicon
+			if ($favicon === '') {
+				$favicon = '<link rel="icon" href="' . $file . '" />';
+			}
+		} else if (is_dir($file) && basename($file) !== '.') {
+			if ($superrecursive && basename($file) !== '..') {
+				//Run this function into the directory
+				CreateHTMLCode($file . '/', $filename, $superrecursive, 
+					$imgsHTML, $songsHTML, $directoriesHTML, $favicon, $i, $deep);
+			} else {
+				$directoriesHTML .= '<article class="dir">
+				<div><h2 class="defaultCursor" id="' . $file . '">Dir: ' . $file . '</h2></div>
+				</article>';
+			}
+		} else if (basename($file) !== '.' 
+			&& basename($file) !== '..' 
+			&& is_dir($file) !== true
+			&& basename($file) !== $filename) {
+			//Display file name
+			$directoriesHTML .= '<article class="file">
+			<div><h2 class="defaultCursor" id="' . $file . '">File: ' . $file . '</h2></div>
+			</article>';
+		}
+	}
+	if ($favicon === '') {
+		//Use MY server wide favicons, feel free to change to yours
+		$favicon = '
+	<link rel="shortcut icon" href="http://jazyserver.com/favicons/favicon.ico" />
+	<link rel="icon" type="image/png" href="http://jazyserver.com/favicons/favicon-96x96.png" />
+	<link rel="icon" type="image/png" href="http://jazyserver.com/favicons/favicon-32x32.png" />
+		';
+	}
 }
 //Will be adding index.php files RECURSIVELY WARNING
 function SearchForPotentialAlbums($dirname, $x) {
@@ -96,6 +116,14 @@ function HasSongs($dirname) {
   }
   return false;
 }
+
+if ($superrecursive) {
+	echo '<h3>Super recursion enabled!</h3>';
+}
+
+CreateHTMLCode($_dir, $_filename, $superrecursive, 
+	$_imgsHTML, $_songsHTML, $_directoriesHTML, $_favicon, $_i, $_deep);
+
 //WARNING FUCKING SAVAGE AHEAD
 SearchForPotentialAlbums(__DIR__, 3);
 ?>
@@ -104,7 +132,7 @@ SearchForPotentialAlbums(__DIR__, 3);
 <html>
 <head>
 <meta charset="UTF-8" />
-<?php echo $favicon ?>
+<?php echo $_favicon ?>
 <!--
 <link rel="shortcut icon" href="http://jazyserver.com/favicons/favicon.ico" />
 <link rel="icon" type="image/png" href="http://jazyserver.com/favicons/favicon-96x96.png" />
@@ -507,7 +535,7 @@ img.albumart {
 <body>
 <header><?php echo basename(__DIR__) ?></header>
 <section id="arts">
-<?php echo $imgsHTML; ?>
+<?php echo $_imgsHTML; ?>
 </section>
 <section id="controls">
 	<div id='controllabel'>Controls for playing all the songs</div>
@@ -522,10 +550,10 @@ img.albumart {
 	</div>
 </section>
 <section id="songs">
-<?php echo $songsHTML; ?>
+<?php echo $_songsHTML; ?>
 </section>
 <section id="dirs">
-<?php echo $directoriesHTML; ?>
+<?php echo $_directoriesHTML; ?>
 </section>
 </body>
 </html>
