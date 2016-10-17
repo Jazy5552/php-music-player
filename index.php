@@ -105,7 +105,8 @@ $filename = basename(__FILE__);
 			&& $file !== '.' 
 			&& $file !== '..') {
 				if (!file_exists($dirname . '/' . $file . '/' . $filename) 
-					&& HasSongs($dirname . '/' . $file)) { 
+          && is_writable($dirname . '/' . $file) ){
+					//&& HasSongs($dirname . '/' . $file)) { 
         copy('./' . $filename, $dirname . '/' . $file . '/' . $filename);
       }
       SearchForPotentialAlbums($dirname . '/' . $file, $x - 1);
