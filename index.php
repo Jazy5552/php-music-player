@@ -175,7 +175,6 @@ function playall() { //Damn nice closure!
 	var bLoopSingText = 'LOOP SINGLE';
 	var bLoopAllText = 'LOOP ALL';
 	var bLoopDefaText = document.getElementById('loop').innerHTML; 
-	var bShuffleOnText = 'SHUFFLE ON';
 	var bShuffleDefaText = document.getElementById('shuffle').innerHTML;
 	var notPlayingOpacity = 0.5;
 	var loop = false; //This is for all songs loop
@@ -222,11 +221,11 @@ function playall() { //Damn nice closure!
 		if (!shuffled) {
 			shuffle(Songs);
 			shuffled = true;
-			shufflebutton.innerHTML = bShuffleOnText;
+			shufflebutton.className = 'activated'; //Removes other classes!
 		} else {
 			Songs = OriginalSongs.slice(0);
 			shuffled = false;
-			shufflebutton.innerHTML = bShuffleDefaText;
+			shufflebutton.className = '';
 			next();
 		}
 		pause();
@@ -533,6 +532,10 @@ img.albumart {
   border: solid 2px black;
 	transition: all 1s;
 	user-select: none;
+}
+
+#shuffle.activated {
+  background-color: lightgreen;
 }
 
 .song {
