@@ -70,8 +70,8 @@ function CreateHTMLCode($odir, $filename, $superrecursive,
 				}
 			} else {
 				$directoriesHTML .= '<article class="dir">
-				<div><h2 class="defaultCursor" id="' . $file . '"><i class="fa fa-folder-open" aria-hidden="true"></i>
-        ' . substr($file, 2) . '</h2></div>
+				<div><a class="defaultCursor link" href="' . $file . '" id="' . $file . '"><i class="fa fa-folder-open" aria-hidden="true"></i>
+        ' . substr($file, 2) . '</a></div>
 				</article>';
 			}
 		} else if (basename($file) !== '.' 
@@ -80,8 +80,8 @@ function CreateHTMLCode($odir, $filename, $superrecursive,
 			&& basename($file) !== $filename) {
 			//Display file name
 			$directoriesHTML .= '<article class="file">
-			<div><h2 class="defaultCursor" id="' . $file . '"><i class="fa fa-file-o" aria-hidden="true"></i>
-      ' . substr($file, 2) . '</h2></div>
+			<div><a class="defaultCursor link" href="' . $file . '" id="' . $file . '"><i class="fa fa-file-o" aria-hidden="true"></i>
+      ' . substr($file, 2) . '</a></div>
 			</article>';
 		}
 	}
@@ -494,14 +494,14 @@ img.albumart {
   -ms-user-select: none;      
   user-select: none;
 }
-.file h2:hover {
+.file a:hover {
 	background-color: #AAF;
 }
 .file {
 	margin: auto;
 	padding: 2px 0px 2px 0px;
 }
-.file h2 {
+.file a {
   margin: 0px;
   margin-top: 2px;
   margin-bottom: 2px;
@@ -514,14 +514,14 @@ img.albumart {
 	user-select: none;
 }
 
-.dir h2:hover {
+.dir a:hover {
   background-color: #AAA;
 }
 .dir {
   margin: auto;
 	padding: 2px 0px 2px 0px;
 }
-.dir h2 {
+.dir a {
   margin: 0px;
   margin-top: 2px;
   margin-bottom: 2px;
@@ -532,6 +532,11 @@ img.albumart {
   border: solid 2px black;
 	transition: all 1s;
 	user-select: none;
+}
+
+a.link {
+	text-decoration: none;
+	color: inherit;
 }
 
 #shuffle.activated {
