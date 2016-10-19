@@ -41,12 +41,12 @@ function CreateHTMLCode($odir, $filename, $superrecursive,
 	$dir = scandir($odir);
 	foreach ($dir as $file) {
 		$file = $odir . $file;
-		if (strpos($file, '.mp') !== false) {
+		if (strpos($file, '.mp3') !== false) {
 			$songsHTML .= '
 			<article class="song">
 				<div>
 					<h2 id="' . $i++ . '">' 
-					. substr($file, 2, strpos($file, '.mp')-2) #Change to basename and use listed items
+					. substr($file, 2, strpos($file, '.mp3')-2) #Change to basename and use listed items
 					. '</h2>
 				</div>
 				<div>
@@ -55,6 +55,25 @@ function CreateHTMLCode($odir, $filename, $superrecursive,
 					. $file . '">
 					Not Supported
 					</audio>
+					<i class="download-button fa fa-arrow-circle-o-down fa-2x"></i>
+				</div>
+			</article>';
+		} else if (strpos($file, '.mp4') !== false) {
+      //Video support (Maybe use videosHTML?)
+      //ug this will get thrown into the music player's autoplay...
+			$songsHTML .= '
+			<article class="song">
+				<div>
+					<h2 id="' . $i++ . '">' 
+					. substr($file, 2, strpos($file, '.mp4')-2) . ' (mp4)' #Change to basename and use listed items
+					. '</h2>
+				</div>
+				<div>
+					<video controls id="' . $file . '" 
+          class="audio" preload="none" src="' 
+					. $file . '">
+					Not Supported
+					</video>
 					<i class="download-button fa fa-arrow-circle-o-down fa-2x"></i>
 				</div>
 			</article>';
