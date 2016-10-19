@@ -2,13 +2,16 @@
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['down'])) {
   //Client wants to download a file lets give it to em
   $file = $_GET['down'];
-  if (strpos($file, '.mp3') === false || file_exists($file) === false) {
-    //Not an mp3? fk off
+
+  if (strpos($file, '.mp') === false 
+    || file_exists($file) === false) {
+    //Not an mp3/4? fk off
     die('Unauthorized');
   }
+  
   header('Content-Type: application/octet-stream');
   header('Content-Transfer-Encoding: Binary'); 
-	header('Content-Disposition: attachment; filename="' . $file . '"'); 
+	header('Content-Disposition: attachment; filename="' .basename($file). '"'); 
 	header('Content-Length: ' . filesize($file));
   readfile($file); // do the double-download-dance (dirty but worky)
   die();
@@ -16,6 +19,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['down'])) {
 //WARNING Change this depending on what you want the file to do
 $INFECTDEPTH = 3; //Depth at which this index file will clone itself into directories 
 //Set INFECTDEPTH to 0 to prevent this file from cloning itself
+//NOTE: Each iteration will clone it self deeper when accessed. This is just
+//to dampen the general server load. aka: shitty coding
 $superrecursive = isset($_GET['recursive']); #If recursive then form a huge music list
 $_dir = './';
 $_filename = basename(__FILE__); #Name of the php file to be ignored
@@ -36,16 +41,17 @@ function CreateHTMLCode($odir, $filename, $superrecursive,
 	$dir = scandir($odir);
 	foreach ($dir as $file) {
 		$file = $odir . $file;
-		if (strpos($file, '.mp3') !== false) {
+		if (strpos($file, '.mp') !== false) {
 			$songsHTML .= '
 			<article class="song">
 				<div>
 					<h2 id="' . $i++ . '">' 
-					. substr($file, 2, strpos($file, '.mp3')-2) #Change to basename and use listed items
+					. substr($file, 2, strpos($file, '.mp')-2) #Change to basename and use listed items
 					. '</h2>
 				</div>
 				<div>
-					<audio controls class="audio" preload="none" src="' 
+					<audio controls id="' . $file . '" 
+          class="audio" preload="none" src="' 
 					. $file . '">
 					Not Supported
 					</audio>
@@ -118,7 +124,7 @@ $filename = basename(__FILE__);
 function HasSongs($dirname) {
   $d = scandir($dirname);
   foreach ($d as $file) {
-    if (strpos($file, '.mp3') !== false) {
+    if (strpos($file, '.mp') !== false) {
       return true;
     }
   }
@@ -400,10 +406,17 @@ function attachDownloads() {
   var dButtons = document.getElementsByClassName('download-button');
   for (var i=0; i<dButtons.length; i++) {
     dButtons[i].addEventListener('click', function() {
-      //Download the song (Use audio source?)
-      var h = this.parentNode.parentNode.getElementsByTagName('h2')[0];
-      //Check this shit out right here, ghetto ass get request
-      var loc = window.location.href + '?down=' + h.innerHTML + '.mp3';
+      //Download the song
+      var audio = this.parentNode.getElementsByTagName('audio')[0];
+      var loc = window.location.href;
+      if (loc.indexOf('?') < 0) {
+        //Some ghetto GET request...
+        loc += '?down=' + audio.id;
+      } else {
+        //Using ?recursive maybe
+        loc += '&down=' + audio.id;
+      }
+
       window.location = loc; //rip
     });
   }
