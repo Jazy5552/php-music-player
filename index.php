@@ -422,7 +422,7 @@ function disableRecursiveMode() {
 window.onload = function() {
 	document.getElementById('play').onclick = playall;
 	scrollAlbumArt();
-  attachDirs();
+	//attachDirs(); //No longer needed as the file/dir links are actual links now
   attachDownloads();
 }
 </script>
@@ -537,6 +537,7 @@ img.albumart {
 a.link {
 	text-decoration: none;
 	color: inherit;
+	font-weight: bold;
 }
 
 #shuffle.activated {
