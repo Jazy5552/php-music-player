@@ -20,6 +20,7 @@ $superrecursive = isset($_GET['recursive']); #If recursive then form a huge musi
 $_dir = './';
 $_filename = basename(__FILE__); #Name of the php file to be ignored
 $_imgsHTML = '';
+$_imgFilesHTML = '';
 $_songsHTML = '';
 $_directoriesHTML = '';
 $_favicon = '';
@@ -27,7 +28,7 @@ $_i = 0; #Used as the ID for the songs
 $_deep = 10; #Limit recursions
 
 function CreateHTMLCode($odir, $filename, $superrecursive, 
-	&$imgsHTML, &$songsHTML, &$directoriesHTML, &$favicon, &$i, &$deep) {
+	&$imgsHTML, &$imgFilesHTML, &$songsHTML, &$directoriesHTML, &$favicon, &$i, &$deep) {
 	if ($deep < 1) { //Recursion control
 		return;
 	}
@@ -57,6 +58,11 @@ function CreateHTMLCode($odir, $filename, $superrecursive,
 				|| strpos($file, '.png') !== false) {
 			#Use the all jpg/png as the album cover
 			$imgsHTML .= '<img class="albumart" src="' . $file . '"></img>';
+			#Create a files html in case audio mode is turned off
+			$imgFilesHTML .= '<article class="file image">
+			<div><a class="defaultCursor link" href="' . $file . '" id="' . $file . '"><i class="fa fa-file-o" aria-hidden="true"></i>
+      ' . substr($file, 2) . '</a></div>
+			</article>';
 			#Use the first one as the favicon
 			if ($favicon === '') {
 				$favicon = '<link rel="icon" href="' . $file . '" />';
@@ -130,7 +136,7 @@ if ($superrecursive) {
 }
 
 CreateHTMLCode($_dir, $_filename, $superrecursive, 
-	$_imgsHTML, $_songsHTML, $_directoriesHTML, $_favicon, $_i, $_deep);
+	$_imgsHTML, $_imgFilesHTML, $_songsHTML, $_directoriesHTML, $_favicon, $_i, $_deep);
 
 //WARNING FUCKING SAVAGE AHEAD
 SearchForPotentialAlbums(__DIR__, $INFECTDEPTH);
@@ -418,12 +424,23 @@ function disableRecursiveMode() {
 	var href = window.location.href;
 	window.location.href = href.substring(0, href.indexOf('?recursive'));
 }
+function disableAudioMode() {
+	document.getElementById('arts').style.display = 'none';
+	document.getElementById('controls').style.display = 'none';
+}
 
 window.onload = function() {
 	document.getElementById('play').onclick = playall;
 	scrollAlbumArt();
 	//attachDirs(); //No longer needed as the file/dir links are actual links now
-  attachDownloads();
+	attachDownloads();
+
+<?php
+if ($_songsHTML == '') {
+	#No songs so disable audio mode
+	echo 'disableAudioMode();';
+}
+?>
 }
 </script>
 <style>
@@ -585,7 +602,13 @@ a.link {
 <?php echo $_songsHTML; ?>
 </section>
 <section id="dirs">
-<?php echo $_directoriesHTML; ?>
+<?php 
+echo $_directoriesHTML;
+if ($_songsHTML === '') {
+	#No songs so disable audio mode and show images as files
+	echo $_imgFilesHTML;
+} 
+?>
 </section>
 </body>
 </html>
