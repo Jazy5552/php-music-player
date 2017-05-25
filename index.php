@@ -52,13 +52,14 @@ function CreateHTMLCode($odir, $filename, $superrecursive,
 					. substr($file, 2, strpos($file, '.mp3')-2) #Change to basename and use listed items
 					. '</h2>
 				</div>
-				<div>
+				<div class="tooltip">
 					<audio controls id="' . $file . '" 
           class="audio" preload="none" src="' 
 					. $file . '">
 					Not Supported
 					</audio>
 					<i class="download-button fa fa-arrow-circle-o-down fa-2x"></i>
+					<span class="tooltiptext">' . $fs . '</span>
 				</div>
 			</article>';
 		} else if (strpos($file, '.mp4') !== false) {
@@ -71,13 +72,14 @@ function CreateHTMLCode($odir, $filename, $superrecursive,
 					. substr($file, 2, strpos($file, '.mp4')-2) . ' (mp4)' #Change to basename and use listed items
 					. '</h2>
 				</div>
-				<div>
+				<div class="tooltip">
 					<video controls id="' . $file . '" 
           class="audio" preload="none" src="' 
 					. $file . '">
 					Not Supported
 					</video>
 					<i class="download-button fa fa-arrow-circle-o-down fa-2x"></i>
+					<span class="tooltiptext">' . $fs . '</span>
 				</div>
 			</article>';
 		} else if (strpos($file, '.jpg') !== false 
