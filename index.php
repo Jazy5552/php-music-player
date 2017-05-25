@@ -42,6 +42,8 @@ function CreateHTMLCode($odir, $filename, $superrecursive,
 	$dir = scandir($odir);
 	foreach ($dir as $file) {
 		$file = $odir . $file;
+		//Get the filesize
+		$fs = human_filesize(filesize($file));
 		if (strpos($file, '.mp3') !== false) {
 			$songsHTML .= '
 			<article class="song">
@@ -85,8 +87,8 @@ function CreateHTMLCode($odir, $filename, $superrecursive,
 			$imgsHTML .= '<img class="albumart" src="' . $file . '"></img>';
 			#Create a files html in case audio mode is turned off
 			$imgFilesHTML .= '<article class="file image">
-			<div><a class="defaultCursor link" href="' . $file . '" id="' . $file . '"><i class="fa fa-file-o" aria-hidden="true"></i>
-      ' . substr($file, 2) . '</a></div>
+			<div class="tooltip"><a class="defaultCursor link" href="' . $file . '" id="' . $file . '"><i class="fa fa-file-o" aria-hidden="true"></i>
+      ' . substr($file, 2) . '</a><span class="tooltiptext">' . $fs . '</span></div>
 			</article>';
 			#Use the first one as the favicon
 			if ($favicon === '') {
@@ -101,7 +103,7 @@ function CreateHTMLCode($odir, $filename, $superrecursive,
 				}
 			} else {
 				$directoriesHTML .= '<article class="dir">
-				<div><a class="defaultCursor link" href="' . $file . '" id="' . $file . '"><i class="fa fa-folder-open" aria-hidden="true"></i>
+				<div class=""><a class="defaultCursor link" href="' . $file . '" id="' . $file . '"><i class="fa fa-folder-open" aria-hidden="true"></i>
         ' . substr($file, 2) . '</a></div>
 				</article>';
 			}
@@ -111,8 +113,8 @@ function CreateHTMLCode($odir, $filename, $superrecursive,
 			&& basename($file) !== $filename) {
 			//Display file name
 			$directoriesHTML .= '<article class="file">
-			<div><a class="defaultCursor link" href="' . $file . '" id="' . $file . '"><i class="fa fa-file-o" aria-hidden="true"></i>
-      ' . substr($file, 2) . '</a></div>
+			<div class="tooltip"><a class="defaultCursor link" href="' . $file . '" id="' . $file . '"><i class="fa fa-file-o" aria-hidden="true"></i>
+      ' . substr($file, 2) . '</a><span class="tooltiptext">' . $fs . '</span></div>
 			</article>';
 		}
 	}
@@ -154,6 +156,12 @@ function HasSongs($dirname) {
     }
   }
   return false;
+}
+//Thanks to php.net for this nice snippet :D
+function human_filesize($bytes, $decimals = 2) {
+  $sz = ' KMGTP';
+  $factor = floor((strlen($bytes) - 1) / 3); //Clever shit right here
+  return sprintf("%.{$decimals}f", $bytes / pow(1024, $factor)) . ' ' . @$sz[$factor] . 'B';
 }
 
 if ($superrecursive) {
@@ -466,11 +474,12 @@ window.onload = function() {
 	scrollAlbumArt();
 	//attachDirs(); //No longer needed as the file/dir links are actual links now
 	attachDownloads();
-
 <?php
 if ($_songsHTML == '') {
 	#No songs so disable audio mode
-	echo 'disableAudioMode();';
+	#echo 'disableAudioMode();';
+	#Done in the html code now (For efficiency)
+	#TODO Delete this
 }
 ?>
 }
@@ -609,12 +618,55 @@ a.link {
 .song h2.defaultCursor:hover {
   color: #55F; /*Pretty little color*/
 }
+.tooltip {
+	display: inline-block;
+	position: relative;
+}
+
+/* Tooltip text */
+.tooltip .tooltiptext {
+	visibility: hidden;
+	width: 6em;
+	background-color: black;
+	color: #fff;
+	text-align: center;
+	padding: 5px 0;
+	border-radius: 6px;
+
+	/* Position the tooltip text - see examples below! */
+	position: absolute;
+	top: 2.5px;
+	right: -7em;
+	z-index: 1;
+}
+
+/* Show the tooltip text when you mouse over the tooltip container */
+.tooltip:hover .tooltiptext {
+	visibility: visible;
+}
+
+/* Little arrow to the left of the tooltip */
+.tooltip .tooltiptext::after {
+	content: " ";
+	position: absolute;
+	top: 50%;
+	right: 100%; /* To the left of the tooltip */
+	margin-top: -5px;
+	border-width: 5px;
+	border-style: solid;
+	border-color: transparent black transparent transparent;
+}
 
 </style>
 <title><?php echo basename(__DIR__) ?></title>
 </head>
 <body>
 <header><?php echo basename(__DIR__) ?></header>
+
+<?php
+if ($_songsHTML !== '') {
+#Enable audio mode if songs are available
+?>
 <section id="arts">
 <?php echo $_imgsHTML; ?>
 </section>
@@ -630,6 +682,10 @@ a.link {
 		<button type="button" id="loop">LOOP OFF</button>
 	</div>
 </section>
+<?php
+}
+?>
+
 <section id="songs">
 <?php echo $_songsHTML; ?>
 </section>
