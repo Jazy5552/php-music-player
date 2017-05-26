@@ -3,7 +3,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['down'])) {
   //Client wants to download a file lets give it to em
   $file = $_GET['down'];
 
-  if (strpos($file, '.mp') === false 
+	//Only allow mp3/mp4 and images
+	if ((strpos($file, '.mp') === false 
+		&& strpos($file, 'jpg') === false
+		&& strpos($file, 'png') === false)
     || file_exists($file) === false) {
     //Not an mp3/4? fk off
     die('Unauthorized');
@@ -21,6 +24,9 @@ $INFECTDEPTH = 3; //Depth at which this index file will clone itself into direct
 //Set INFECTDEPTH to 0 to prevent this file from cloning itself
 //NOTE: Each iteration will clone it self deeper when accessed. This is just
 //to dampen the general server load. aka: shitty coding
+
+//TODO Add more customization
+//DONT EDIT BELOW THIS
 $superrecursive = isset($_GET['recursive']); #If recursive then form a huge music list
 $_dir = './';
 $_filename = basename(__FILE__); #Name of the php file to be ignored
@@ -86,7 +92,9 @@ function CreateHTMLCode($odir, $filename, $superrecursive,
 				|| strpos($file, '.jpeg') !== false
 				|| strpos($file, '.png') !== false) {
 			#Use the all jpg/png as the album cover
-			$imgsHTML .= '<img class="albumart" src="' . $file . '"></img>';
+			$imgsHTML .= '<img class="albumart" 
+				src="' . $file . '"
+				loc="' . $file . '"></img>';
 			#Create a files html in case audio mode is turned off
 			$imgFilesHTML .= '<article class="file image">
 			<div class="tooltip"><a class="defaultCursor link" href="' . $file . '" id="' . $file . '"><i class="fa fa-file-o" aria-hidden="true"></i>
@@ -403,7 +411,7 @@ function scrollAlbumArt() {
       //Do nothing
     } else {
       backgroundHolder.style.backgroundImage = '';
-      imgs[current].style.opacity = '0';
+			imgs[current].style.opacity = '0';
 		}
     current++;
 		if (current >= imgs.length) current = 0;
@@ -443,18 +451,33 @@ function attachDownloads() {
     dButtons[i].addEventListener('click', function() {
       //Download the song
       var audio = this.parentNode.getElementsByTagName('audio')[0];
-      var loc = window.location.href;
-      if (loc.indexOf('?') < 0) {
-        //Some ghetto GET request...
-        loc += '?down=' + audio.id;
-      } else {
-        //Using ?recursive maybe
-        loc += '&down=' + audio.id;
-      }
-
-      window.location = loc; //rip
+			download(audio.id);
     });
   }
+}
+
+function downImage(e) {
+	//Check all images for the visible one
+	var imgs = document.getElementsByClassName('albumart');
+	for (var i=0; i<imgs.length; i++) {
+		if (imgs[i].style.opacity === '1') {
+			download(imgs[i].getAttribute('loc'));
+			return;
+		}
+	}
+}
+
+function download(file) {
+	var loc = window.location.href;
+	if (loc.indexOf('?') < 0) {
+		//Some ghetto GET request...
+		loc += '?down=' + file;
+	} else {
+		//Using ?recursive maybe
+		loc += '&down=' + file;
+	}
+
+	window.location = loc; //rip
 }
 
 function enableRecursiveMode() {
@@ -473,17 +496,13 @@ function disableAudioMode() {
 
 window.onload = function() {
 	document.getElementById('play').onclick = playall;
+	var imgs = document.getElementsByClassName('albumart');
+	for (var i=0; i<imgs.length; i++) {
+		imgs[i].addEventListener('click', downImage);
+	}
 	scrollAlbumArt();
 	//attachDirs(); //No longer needed as the file/dir links are actual links now
 	attachDownloads();
-<?php
-if ($_songsHTML == '') {
-	#No songs so disable audio mode
-	#echo 'disableAudioMode();';
-	#Done in the html code now (For efficiency)
-	#TODO Delete this
-}
-?>
 }
 </script>
 <style>
