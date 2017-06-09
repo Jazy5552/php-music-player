@@ -109,7 +109,7 @@ function CreateHTMLCode($odir, $filename, $superrecursive,
 				if (basename($file) !== '..') { //Dont show ../ directories
 					//Run this function into the directory
 					CreateHTMLCode($file . '/', $filename, $superrecursive, 
-						$imgsHTML, $songsHTML, $directoriesHTML, $favicon, $i, $deep);
+						$imgsHTML, $imgFilesHTML, $songsHTML, $directoriesHTML, $favicon, $i, $deep);
 				}
 			} else {
 				$directoriesHTML .= '<article class="dir">
