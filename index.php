@@ -68,9 +68,11 @@ function CreateHTMLCode($odir, $filename, $superrecursive,
 					<span class="tooltiptext">' . $fs . '</span>
 				</div>
 			</article>';
-		} else if (strpos($file, '.mp4') !== false) {
+		/*
+		 	} else if (strpos($file, '.mp4') !== false) {
       //Video support (Maybe use videosHTML?)
-      //ug this will get thrown into the music player's autoplay...
+			//ug this will get thrown into the music player's autoplay...
+			//REMOVING THIS SHIT
 			$songsHTML .= '
 			<article class="song">
 				<div>
@@ -87,7 +89,8 @@ function CreateHTMLCode($odir, $filename, $superrecursive,
 					<i class="download-button fa fa-arrow-circle-o-down fa-2x"></i>
 					<span class="tooltiptext">' . $fs . '</span>
 				</div>
-			</article>';
+				</article>';
+		 */
 		} else if (strpos($file, '.jpg') !== false 
 				|| strpos($file, '.jpeg') !== false
 				|| strpos($file, '.png') !== false) {
