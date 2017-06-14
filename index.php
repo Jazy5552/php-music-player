@@ -20,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['down'])) {
   die();
 }
 //WARNING Change this depending on what you want the file to do
-$INFECTDEPTH = 0; //Depth at which this index file will clone itself into directories 
+$INFECTDEPTH = 3; //Depth at which this index file will clone itself into directories 
 //Set INFECTDEPTH to 0 to prevent this file from cloning itself
 //NOTE: Each iteration will clone it self deeper when accessed. This is just
 //to dampen the general server load. aka: shitty coding
@@ -344,9 +344,11 @@ function playall() { //Damn nice closure!
 		CurrentAudio.loop = false;
 		CurrentAudio = null;
 		loop = false;
-		document.getElementById('play').onclick = play;
+		document.getElementById('play').onclick = playall;
 		document.getElementById('play').innerHTML = bDefaText;
 		document.getElementById('loop').innerHTML = bLoopDefaText; 
+		document.getElementById('shuffle').innerHTML = bShuffleDefaText;
+		document.getElementById('shuffle').className = '';
 	}
 	function next() {
 		if (CurrentAudio === null) return; //Nasty safetys...
@@ -510,7 +512,6 @@ window.onload = function() {
 </script>
 <style>
 body {
-	margin: 0em 2em 0em 2em;
 }
 header {
 	font-size: 3em;
