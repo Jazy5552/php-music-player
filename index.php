@@ -20,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['down'])) {
   die();
 }
 //WARNING Change this depending on what you want the file to do
-$INFECTDEPTH = 3; //Depth at which this index file will clone itself into directories 
+$INFECTDEPTH = 0; //Depth at which this index file will clone itself into directories 
 //Set INFECTDEPTH to 0 to prevent this file from cloning itself
 //NOTE: Each iteration will clone it self deeper when accessed. This is just
 //to dampen the general server load. aka: shitty coding
@@ -509,6 +509,9 @@ window.onload = function() {
 }
 </script>
 <style>
+body {
+	margin: 0em 2em 0em 2em;
+}
 header {
 	font-size: 3em;
 	text-shadow: 1px 1px gray;
