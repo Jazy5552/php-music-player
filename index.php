@@ -39,7 +39,7 @@ $_i = 0; #Used as the ID for the songs
 $_deep = 10; #Limit recursions
 
 function CreateHTMLCode($odir, $filename, $superrecursive, 
-	&$imgsHTML, &$imgFilesHTML, &$songsHTML, &$directoriesHTML, &$favicon, &$i, &$deep) {
+	&$imgsHTML, &$imgFilesHTML, &$songsHTML, &$directoriesHTML, &$favicon, &$i, $deep) {
 	if ($deep < 1) { //Recursion control
 		return;
 	}
@@ -55,7 +55,7 @@ function CreateHTMLCode($odir, $filename, $superrecursive,
 			<article class="song">
 				<div>
 					<h2 id="' . $i++ . '">' 
-					. substr($file, 2, strpos($file, '.mp3')-2) #Change to basename and use listed items
+					. substr(basename($file), 0, strpos(basename($file), '.mp3')) #Change to basename and use listed items
 					. '</h2>
 				</div>
 				<div class="tooltip">
@@ -110,9 +110,13 @@ function CreateHTMLCode($odir, $filename, $superrecursive,
 		} else if (is_dir($file) && basename($file) !== '.') {
 			if ($superrecursive) {
 				if (basename($file) !== '..') { //Dont show ../ directories
+					$songsHTML .= '<div class="box"><div class="boxlabel">'
+						. substr($file, 2) . '</div>';
 					//Run this function into the directory
 					CreateHTMLCode($file . '/', $filename, $superrecursive, 
 						$imgsHTML, $imgFilesHTML, $songsHTML, $directoriesHTML, $favicon, $i, $deep);
+					$songsHTML .= '</div>';
+					//TODO Remove empty box divs
 				}
 			} else {
 				$directoriesHTML .= '<article class="dir">
@@ -178,7 +182,7 @@ function human_filesize($bytes, $decimals = 2) {
 }
 
 if ($superrecursive) {
-	echo '<h3>Super recursion enabled!</h3>';
+	//echo '<h3>Super recursion enabled!</h3>';
 }
 
 CreateHTMLCode($_dir, $_filename, $superrecursive, 
@@ -203,7 +207,8 @@ SearchForPotentialAlbums(__DIR__, $INFECTDEPTH);
 <!-- CDN Link with some cool free icons! -->
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
 <script>	
-function shuffle(a) { //Shuffles the array
+function shuffle(a) { 
+	//Shuffles the array (So basic...)
 	var i = a.length, x, j;
 	while (--i) {
 		j = Math.floor(Math.random() * (i+1));
@@ -218,6 +223,7 @@ function shuffle(a) { //Shuffles the array
 function playall() { //Damn nice closure!
 	var CurrentSong = 0;
 	var CurrentAudio = null;
+	var CurrentLabel = document.getElementById('cslabel');
 	var Songs = document.getElementsByClassName('audio');
 	Songs = Array.prototype.slice.call(Songs, 0);
 	var OriginalSongs = Songs.slice(0); //clone
@@ -251,16 +257,16 @@ function playall() { //Damn nice closure!
 			Songs[i].parentNode.parentNode.style.opacity = notPlayingOpacity;
 			Songs[i].style.display = 'none';
 		}
-		//Except currently playing //WARN Its all gone to shit because of moving the audio up
-		Songs[CurrentSong].parentNode.parentNode.removeAttribute('style');
+		//Except currently playing //WARN Its all gone to shit because of moving the audio up, you fuck //OK It no longer moves anything up
+		//Songs[CurrentSong].parentNode.parentNode.removeAttribute('style');
+		Songs[CurrentSong].parentNode.parentNode.style.opacity = '';
 		var cslabel = Songs[CurrentSong].parentNode.parentNode.getElementsByTagName('h2')[0].innerHTML;
 		document.title = '[' + cslabel + ']';
-		//Only leave current text visible
 
-		//Copy playing to the top //NOW CHANGE SRC
-		//label.innerHTML = Songs[CurrentSong].parentNode.parentNode.outerHTML;
+		//NOW CHANGE SRC
 		CurrentAudio = document.getElementById('currentsong');
-		CurrentAudio.parentNode.getElementsByTagName('h2')[0].innerHTML = cslabel;
+		CurrentLabel.style.display = 'block';
+		CurrentLabel.innerHTML = cslabel;
 		CurrentAudio.style.display = 'block';
 		CurrentAudio.src = Songs[CurrentSong].src;
 		CurrentAudio.load();
@@ -336,10 +342,9 @@ function playall() { //Damn nice closure!
 		}
 		document.title = oTitle;
 		CurrentSong = 0;
+		CurrentLabel.style.display = '';
+		CurrentLabel.innerHTML = '';
 		CurrentAudio.parentNode.getElementsByTagName('h2')[0].innerHTML = '';
-		//updateCurrentSong();
-		//var label = document.getElementById('currentsong');
-		//label.innerHTML = '';
 		CurrentAudio.removeAttribute('style');
 		CurrentAudio.loop = false;
 		CurrentAudio = null;
@@ -394,7 +399,9 @@ function playall() { //Damn nice closure!
 	document.getElementById('shuffle').onclick = shuffleToggle;
 	play();
 }
+
 function scrollAlbumArt() {
+	//NO FUCKING BRAKES
 	var DELAY = 20;
 	var imgs = document.getElementsByClassName('albumart');
   var artsHolder = document.getElementById('arts');
@@ -423,9 +430,9 @@ function scrollAlbumArt() {
 		//Display next image
     if (getComputedStyle(artsHolder).display === 'none') {
       backgroundHolder.style.backgroundImage = 'url(' + imgs[current].src + ')';
-      backgroundHolder.style.backgroundSize = '30%';
-      backgroundHolder.style.backgroundRepeat = 'round';
-      backgroundHolder.style.backgroundPosition = 'top right';
+      backgroundHolder.style.backgroundSize = 'contain';
+      backgroundHolder.style.backgroundRepeat = 'no-repeat';
+      backgroundHolder.style.backgroundPosition = 'top left';
     } else {
       imgs[current].style.opacity = '1';
     }
@@ -485,27 +492,92 @@ function download(file) {
 	window.location = loc; //rip
 }
 
-function enableRecursiveMode() {
-	if (window.location.href.indexOf('?recursive') === -1) {
-		window.location.href = window.location.href + '?recursive';
+function headerClicked(e) {
+	if (e.ctrlKey) {
+		toggleRecursiveMode();
 	}
 }
-function disableRecursiveMode() {
-	var href = window.location.href;
-	window.location.href = href.substring(0, href.indexOf('?recursive'));
+
+function toggleRecursiveMode() {
+	if (window.location.href.indexOf('?recursive') === -1) {
+		//Enable
+		window.location.href = window.location.href + '?recursive';
+	} else {
+		//Disable WARN: What if something is after ?recursive!
+		var href = window.location.href;
+		window.location.href = href.substring(0, href.indexOf('?recursive'));
+	}
 }
+
+function toggleBox(e) {
+	//Uses element.classList which doesn't work on IE10
+	//Fuck IE
+	var boxlabel = e.target;
+	var box = boxlabel.parentElement;
+	if (boxlabel.classList.contains('closedboxlabel')) {
+		boxlabel.classList.remove('closedboxlabel');
+		box.classList.remove('closedbox');
+		//boxlabel.classList.add('openboxlabel');
+		//box.classList.add('openbox');
+		//Open it
+		box.childNodes.forEach(function(c) {
+			if (c !== boxlabel && c.nodeType == Node.ELEMENT_NODE)
+				c.style.display = '';
+		});
+	} else {
+		boxlabel.classList.add('closedboxlabel');
+		box.classList.add('closedbox');
+		//boxlabel.classList.remove('openboxlabel');
+		//box.classList.remove('openbox');
+		//Close it
+		box.childNodes.forEach(function(c) {
+			if (c !== boxlabel && c.nodeType == Node.ELEMENT_NODE)
+				c.style.display = 'none';
+		});
+	}
+}
+
+var timer;
+var dur = 3000;
+function headerTouched(e) { // ( ͡° ͜ʖ ͡°)
+	if (e.type === 'touchstart') {
+		timer = setTimeout(toggleRecursiveMode, dur);
+	} else if (e.type === 'touchmove' || e.type === 'touchend') {
+		if (timer)
+			clearTimeout(timer);
+	}
+}
+
 function disableAudioMode() {
 	document.getElementById('arts').style.display = 'none';
 	document.getElementById('controls').style.display = 'none';
 }
 
 window.onload = function() {
-	document.getElementById('play').onclick = playall;
+	var pa = document.getElementById('play');
+	if (pa !== null) {
+		pa.onclick = playall;
+	}
+
+	var head = document.getElementsByTagName('header')[0];
+	if (head !== null) {
+		head.onclick = headerClicked;
+		head.addEventListener('touchstart', headerTouched);
+		head.addEventListener('touchmove', headerTouched);
+		head.addEventListener('touchend', headerTouched);
+	}
+
 	var imgs = document.getElementsByClassName('albumart');
 	for (var i=0; i<imgs.length; i++) {
 		imgs[i].addEventListener('click', downImage);
 	}
 	scrollAlbumArt();
+
+	var boxlabels = document.getElementsByClassName('boxlabel');
+	for (var i=0; i<boxlabels.length; i++) {
+		boxlabels[i].addEventListener('click', toggleBox);
+	}
+
 	//attachDirs(); //No longer needed as the file/dir links are actual links now
 	attachDownloads();
 }
@@ -518,7 +590,9 @@ header {
 	text-shadow: 1px 1px gray;
   overflow-x: auto;
   text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;
-  color: black;
+	color: black;
+	cursor: default;
+	user-select: none;
 }
 .fa-arrow-circle-o-down {
   position: relative;
@@ -532,21 +606,31 @@ header {
 .fa-arrow-circle-o-down:hover {
   color: #181; /*Nice color for download?*/
 }
-#controllabel {
-	width: 190px;
-	background-color: white;
-	font-size: 14px;
-	margin-top: -16px;
+#cslabel {
+	display: none;
 }
+/*#controllabel {
+	display: inline-block;
+	background-color: white;
+	font-size: 0.9em;
+	position: absolute;
+	top: -1.2em;
+}*/
 #controls {
 	margin: 10px 0px 10px 0px;
 	padding: 5px 5px 5px 5px;
 	display: inline-block;
-	border: 3px gray solid;
+	border: 3px gray double;
 	width: auto;
+	position: relative;
 }
 #controls button {
-  margin: 3px 0px;
+	margin: 3px 0px;
+	height: 2.2em;
+	width: 3em;
+}
+#controls #loop {
+	width: 7em;
 }
 #currentsong {
 	display: none;
@@ -556,7 +640,13 @@ header {
 @media all and (max-width: 760px) {
   #arts {
     display: none;
-  }
+	}
+	.mobilecenter {
+		display: inline-block;
+		position: relative;
+    left: 50%;
+		transform: translateX(-50%);
+	}
 }
 img.albumart {
 	/*width: 300px;
@@ -569,6 +659,13 @@ img.albumart {
 	border-width: 20px;
 	transition: all 5s ease-in-out;
 	opacity: 0;
+	z-index: -1;
+}
+.wrapper {
+	display: inline-block;
+}
+.shiftup {
+	margin-top: -1.5em;
 }
 .defaultCursor {
 	-webkit-cursor: pointer;
@@ -598,6 +695,34 @@ img.albumart {
   border: solid 2px blue;
 	transition: all 1s;
 	user-select: none;
+}
+
+.box {
+	border-style: inset;
+	border-width: 3px;
+	border-color: lightblue;
+	padding: 5px;
+	margin: 10px 0px 10px 0px;
+	position: relative;
+}
+
+.boxlabel {
+	cursor: default;
+	user-select: none;
+	font-size: 1em;
+	font-style: oblique;
+	color: darkcyan;
+	display: inline-block;
+	background-color: lightyellow;
+	position: absolute;
+	top: -0.6em;
+}
+
+.closedboxlabel {
+	color: darkred;
+}
+.closedbox {
+	border-style: outset;
 }
 
 .dir a:hover {
@@ -653,7 +778,8 @@ a.link {
 
 /* Tooltip text */
 .tooltip .tooltiptext {
-	visibility: hidden;
+	/*visibility: hidden;*/
+	display: none;
 	width: 6em;
 	background-color: black;
 	color: #fff;
@@ -670,7 +796,8 @@ a.link {
 
 /* Show the tooltip text when you mouse over the tooltip container */
 .tooltip:hover .tooltiptext {
-	visibility: visible;
+	/*visibility: visible;*/
+	display: inline;
 }
 
 /* Little arrow to the left of the tooltip */
@@ -698,8 +825,8 @@ if ($_songsHTML !== '') {
 <section id="arts">
 <?php echo $_imgsHTML; ?>
 </section>
-<section id="controls">
-	<div id='controllabel'>Controls for playing all the songs</div>
+<section id="controls" class="mobilecenter">
+	<!--<div id='controllabel'>Controls for playing all the songs</div>-->
 	<div>
 		<span><h2 id="cslabel"></h2><audio id="currentsong" preload="auto" controls></audio></span>
 		<button type="button" id="previous"><!--PREVIOUS--><i class="fa fa-step-backward" aria-hidden="true"></i></button>
@@ -714,10 +841,13 @@ if ($_songsHTML !== '') {
 }
 ?>
 
-<section id="songs">
+<section id="songs" class="mobilecenter">
+<div class="wrapper">
 <?php echo $_songsHTML; ?>
+</div>
 </section>
 <section id="dirs">
+<div class="wrapper">
 <?php 
 echo $_directoriesHTML;
 if ($_songsHTML === '') {
@@ -725,6 +855,7 @@ if ($_songsHTML === '') {
 	echo $_imgFilesHTML;
 } 
 ?>
+</div>
 </section>
 </body>
 </html>
