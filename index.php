@@ -53,44 +53,21 @@ function CreateHTMLCode($odir, $filename, $superrecursive,
 		if (strpos($file, '.mp3') !== false) {
 			$songsHTML .= '
 			<article class="song">
-				<div>
+				<div class="tooltip">
+					<i class="download-button hide fa fa-arrow-circle-o-down fa-2x"></i>
+					<span class="tooltiptext">' . $fs . '</span>
 					<h2 id="' . $i++ . '">' 
 					. substr(basename($file), 0, strpos(basename($file), '.mp3')) #Change to basename and use listed items
 					. '</h2>
 				</div>
-				<div class="tooltip">
+				<div>
 					<audio controls id="' . $file . '" 
           class="audio" preload="none" src="' 
 					. $file . '">
 					Not Supported
 					</audio>
-					<i class="download-button fa fa-arrow-circle-o-down fa-2x"></i>
-					<span class="tooltiptext">' . $fs . '</span>
 				</div>
 			</article>';
-		/*
-		 	} else if (strpos($file, '.mp4') !== false) {
-      //Video support (Maybe use videosHTML?)
-			//ug this will get thrown into the music player's autoplay...
-			//REMOVING THIS SHIT
-			$songsHTML .= '
-			<article class="song">
-				<div>
-					<h2 id="' . $i++ . '">' 
-					. substr($file, 2, strpos($file, '.mp4')-2) . ' (mp4)' #Change to basename and use listed items
-					. '</h2>
-				</div>
-				<div class="tooltip">
-					<video controls id="' . $file . '" 
-          class="audio" preload="none" src="' 
-					. $file . '">
-					Not Supported
-					</video>
-					<i class="download-button fa fa-arrow-circle-o-down fa-2x"></i>
-					<span class="tooltiptext">' . $fs . '</span>
-				</div>
-				</article>';
-		 */
 		} else if (strpos($file, '.jpg') !== false 
 				|| strpos($file, '.jpeg') !== false
 				|| strpos($file, '.png') !== false) {
@@ -221,6 +198,7 @@ function shuffle(a) {
 	//return a;
 }
 function playall() { //Damn nice closure!
+	//Setting things up
 	var CurrentSong = 0;
 	var CurrentAudio = null;
 	var CurrentLabel = document.getElementById('cslabel');
@@ -238,7 +216,8 @@ function playall() { //Damn nice closure!
 	var loop = false; //This is for all songs loop
 	var shuffled = false; //Keep track of shuffle
 	var oTitle = document.title;
-  var originalClass; //This is for the h2 headers and also disgusting
+	var originalClass; //This is for the h2 headers and also disgusting
+	//Pause and opaque all the songs
 	for (var i = 0; i < Songs.length; i++) {
 		Songs[i].pause();
 		Songs[i].parentNode.parentNode.style.opacity = notPlayingOpacity;
@@ -250,6 +229,13 @@ function playall() { //Damn nice closure!
 		Songs[i].parentNode.parentNode.getElementsByTagName('h2')[0].onclick 
       = function(){onClick(this.id);}; //Allow to click to jump to song
 	}
+	//Make download buttons visible
+	var dButtons = document.getElementsByClassName('download-button');
+	for (var i=0; i<dButtons.length; i++) {
+		dButtons[i].classList.toggle('hide');
+	}
+
+	//Done setting things up
 	function updateCurrentSong() {
 		console.log(CurrentSong + ' ' + CurrentAudio + ' ' + Songs.length + ' ' + Songs[CurrentSong].src);
 		//Make non playing transparent
@@ -339,6 +325,10 @@ function playall() { //Damn nice closure!
       Songs[i].parentNode.parentNode.getElementsByTagName('h2')[0].className
         = originalClass;
 			Songs[i].removeAttribute('style');
+		}
+		var dButtons = document.getElementsByClassName('download-button');
+		for (var i=0; i<dButtons.length; i++) {
+			dButtons[i].classList.toggle('hide');
 		}
 		document.title = oTitle;
 		CurrentSong = 0;
@@ -462,7 +452,7 @@ function attachDownloads() {
   for (var i=0; i<dButtons.length; i++) {
     dButtons[i].addEventListener('click', function() {
       //Download the song
-      var audio = this.parentNode.getElementsByTagName('audio')[0];
+      var audio = this.parentNode.parentNode.getElementsByTagName('audio')[0];
 			download(audio.id);
     });
   }
@@ -594,9 +584,12 @@ header {
 	cursor: default;
 	user-select: none;
 }
+.hide {
+	display: none;
+}
 .fa-arrow-circle-o-down {
   position: relative;
-  top: -3px; /*The shit i put up with...*/
+  top: 0.15em; /*The shit i put up with...*/
 	-webkit-cursor: pointer;
 	-moz-cursor: pointer;
 	-ms-cursor: pointer;
