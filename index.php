@@ -39,7 +39,7 @@ $_i = 0; #Used as the ID for the songs
 $_deep = 10; #Limit recursions
 
 function CreateHTMLCode($odir, $filename, $superrecursive, 
-	&$imgsHTML, &$imgFilesHTML, &$songsHTML, &$directoriesHTML, &$favicon, &$i, &$deep) {
+	&$imgsHTML, &$imgFilesHTML, &$songsHTML, &$directoriesHTML, &$favicon, &$i, $deep) {
 	if ($deep < 1) { //Recursion control
 		return;
 	}
@@ -506,8 +506,14 @@ function disableAudioMode() {
 }
 
 window.onload = function() {
-	document.getElementById('play').onclick = playall;
-	document.getElementsByTagName('header').onclick = headerClicked;
+	var pa = document.getElementById('play');
+	if (pa !== null)
+		pa.onclick = playall;
+
+	var head = document.getElementsByTagName('header')[0];
+	if (head !== null)
+		head.onclick = headerClicked;
+
 	var imgs = document.getElementsByClassName('albumart');
 	for (var i=0; i<imgs.length; i++) {
 		imgs[i].addEventListener('click', downImage);
