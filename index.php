@@ -88,7 +88,7 @@ function CreateHTMLCode($odir, $filename, $superrecursive,
 			if ($superrecursive) {
 				if (basename($file) !== '..') { //Dont show ../ directories
 					$songsHTML .= '<div class="box"><div class="boxlabel">'
-						. substr($file, 2) . '</div>';
+						. basename($file) . '</div>';
 					//Run this function into the directory
 					CreateHTMLCode($file . '/', $filename, $superrecursive, 
 						$imgsHTML, $imgFilesHTML, $songsHTML, $directoriesHTML, $favicon, $i, $deep);
@@ -248,8 +248,15 @@ function playall() { //Damn nice closure!
 		Songs[CurrentSong].parentNode.parentNode.style.opacity = '';
 		var cslabel = Songs[CurrentSong].parentNode.parentNode.getElementsByTagName('h2')[0].innerHTML;
 		document.title = '[' + cslabel + ']';
+		//Find album name if in super recursive mode
+		var p = Songs[CurrentSong].parentNode.parentNode.parentNode.getElementsByClassName('boxlabel')[0];
+		if (p) {
+			cslabel = '<div class="cslabel2">' 
+				+ p.innerHTML 
+				+ '</div>' 
+				+ cslabel;
+		}
 
-		//NOW CHANGE SRC
 		CurrentAudio = document.getElementById('currentsong');
 		CurrentLabel.style.display = 'block';
 		CurrentLabel.innerHTML = cslabel;
@@ -720,6 +727,13 @@ img.albumart {
 }
 .closedbox {
 	border-style: outset;
+}
+
+.cslabel2 {
+	font-size: 0.7em;
+	font-style: normal;
+	font-weight: normal;
+	text-align: center;
 }
 
 .dir a:hover {
