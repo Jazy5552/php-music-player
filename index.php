@@ -483,15 +483,23 @@ function download(file) {
 	window.location = loc; //rip
 }
 
-function enableRecursiveMode() {
-	if (window.location.href.indexOf('?recursive') === -1) {
-		window.location.href = window.location.href + '?recursive';
+function headerClicked(e) {
+	if (e.ctrlKey) {
+		toggleRecursiveMode();
 	}
 }
-function disableRecursiveMode() {
-	var href = window.location.href;
-	window.location.href = href.substring(0, href.indexOf('?recursive'));
+
+function toggleRecursiveMode() {
+	if (window.location.href.indexOf('?recursive') === -1) {
+		//Enable
+		window.location.href = window.location.href + '?recursive';
+	} else {
+		//Disable WARN: What if something is after ?recursive!
+		var href = window.location.href;
+		window.location.href = href.substring(0, href.indexOf('?recursive'));
+	}
 }
+
 function disableAudioMode() {
 	document.getElementById('arts').style.display = 'none';
 	document.getElementById('controls').style.display = 'none';
@@ -499,6 +507,7 @@ function disableAudioMode() {
 
 window.onload = function() {
 	document.getElementById('play').onclick = playall;
+	document.getElementsByTagName('header').onclick = headerClicked;
 	var imgs = document.getElementsByClassName('albumart');
 	for (var i=0; i<imgs.length; i++) {
 		imgs[i].addEventListener('click', downImage);
@@ -565,6 +574,7 @@ img.albumart {
 	border-width: 20px;
 	transition: all 5s ease-in-out;
 	opacity: 0;
+	z-index: -1;
 }
 .defaultCursor {
 	-webkit-cursor: pointer;
