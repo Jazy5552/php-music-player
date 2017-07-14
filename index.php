@@ -639,6 +639,10 @@ header {
 		position: relative;
     left: 50%;
 		transform: translateX(-50%);
+		width: 100%;
+	}
+	.wrapper {
+		width: 100%;
 	}
 }
 img.albumart {
