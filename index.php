@@ -621,7 +621,9 @@ header {
 	position: relative;
 }
 #controls button {
-  margin: 3px 0px;
+	margin: 3px 0px;
+	height: 2.2em;
+	width: 3em;
 }
 #controls #loop {
 	width: 7em;
@@ -840,7 +842,7 @@ if ($_songsHTML !== '') {
 <?php echo $_songsHTML; ?>
 </div>
 </section>
-<section id="dirs" class="mobilecenter">
+<section id="dirs">
 <div class="wrapper">
 <?php 
 echo $_directoriesHTML;
