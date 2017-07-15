@@ -200,7 +200,7 @@ function shuffle(a) {
 function playall() { //Damn nice closure!
 	//Setting things up
 	var CurrentSong = 0;
-	var CurrentAudio = null;
+	var CurrentAudio = document.getElementById('currentsong');
 	var CurrentLabel = document.getElementById('cslabel');
 	var Songs = document.getElementsByClassName('audio');
 	Songs = Array.prototype.slice.call(Songs, 0);
@@ -257,7 +257,6 @@ function playall() { //Damn nice closure!
 				+ cslabel;
 		}
 
-		CurrentAudio = document.getElementById('currentsong');
 		CurrentLabel.style.display = 'block';
 		CurrentLabel.innerHTML = cslabel;
 		CurrentAudio.style.display = 'block';
@@ -306,6 +305,7 @@ function playall() { //Damn nice closure!
 		document.getElementById('play').innerHTML = bPausText;
 	}
 	function pause() {
+		//WARN Function runs twice
 		if (CurrentAudio === null) return;
 		CurrentAudio.pause();
 		CurrentAudio.removeEventListener('ended', onEnded);
@@ -313,7 +313,8 @@ function playall() { //Damn nice closure!
 		document.getElementById('play').innerHTML = bPlayText;
 	}
 	function resume() {
-		if (CurrentAudio === null) return; //Nasty safetys...
+		//WARN Function runs twice
+		if (CurrentAudio === null) return;
 		CurrentAudio.play();
 		CurrentAudio.addEventListener('ended', onEnded);
 		document.getElementById('play').onclick = pause;
@@ -344,7 +345,10 @@ function playall() { //Damn nice closure!
 		CurrentAudio.parentNode.getElementsByTagName('h2')[0].innerHTML = '';
 		CurrentAudio.removeAttribute('style');
 		CurrentAudio.loop = false;
-		CurrentAudio = null;
+		//Remove all event listeners by cloning the element
+		var tmp = CurrentAudio.cloneNode(true);
+		CurrentAudio.parentNode.replaceChild(tmp, CurrentAudio);
+		CurrentAudio = null; //Why you do dis?
 		loop = false;
 		document.getElementById('play').onclick = playall;
 		document.getElementById('play').innerHTML = bDefaText;
@@ -394,6 +398,8 @@ function playall() { //Damn nice closure!
 	document.getElementById('stop').onclick = stop;
 	document.getElementById('loop').onclick = loopToggle;
 	document.getElementById('shuffle').onclick = shuffleToggle;
+	CurrentAudio.addEventListener('pause', pause);
+	CurrentAudio.addEventListener('play', resume);
 	play();
 }
 
