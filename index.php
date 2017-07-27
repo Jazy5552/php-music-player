@@ -305,20 +305,22 @@ function playall() { //Damn nice closure!
 		document.getElementById('play').innerHTML = bPausText;
 	}
 	function pause() {
+		console.log('Paused');
 		CurrentAudio.pause();
 		CurrentAudio.removeEventListener('ended', onEnded);
-		pauseUI();
 	}
 	function pauseUI() {
+		console.log('Paused UI');
 		document.getElementById('play').onclick = resume;
 		document.getElementById('play').innerHTML = bPlayText;
 	}
 	function resume() {
+		console.log('Resumed');
 		CurrentAudio.play();
 		CurrentAudio.addEventListener('ended', onEnded);
-		resumeUI();
 	}
 	function resumeUI() {
+		console.log('Resumed UI');
 		document.getElementById('play').onclick = pause;
 		document.getElementById('play').innerHTML = bPausText;
 	}
