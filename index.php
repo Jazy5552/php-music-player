@@ -305,18 +305,20 @@ function playall() { //Damn nice closure!
 		document.getElementById('play').innerHTML = bPausText;
 	}
 	function pause() {
-		//WARN Function runs twice
-		if (CurrentAudio === null) return;
 		CurrentAudio.pause();
 		CurrentAudio.removeEventListener('ended', onEnded);
+		pauseUI();
+	}
+	function pauseUI() {
 		document.getElementById('play').onclick = resume;
 		document.getElementById('play').innerHTML = bPlayText;
 	}
 	function resume() {
-		//WARN Function runs twice
-		if (CurrentAudio === null) return;
 		CurrentAudio.play();
 		CurrentAudio.addEventListener('ended', onEnded);
+		resumeUI();
+	}
+	function resumeUI() {
 		document.getElementById('play').onclick = pause;
 		document.getElementById('play').innerHTML = bPausText;
 	}
@@ -398,8 +400,8 @@ function playall() { //Damn nice closure!
 	document.getElementById('stop').onclick = stop;
 	document.getElementById('loop').onclick = loopToggle;
 	document.getElementById('shuffle').onclick = shuffleToggle;
-	CurrentAudio.addEventListener('pause', pause);
-	CurrentAudio.addEventListener('play', resume);
+	CurrentAudio.addEventListener('pause', pauseUI);
+	CurrentAudio.addEventListener('play', resumeUI);
 	play();
 }
 
