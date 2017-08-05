@@ -194,7 +194,7 @@ function shuffle(a) {
 		a[i] = a[j];
 		a[j] = x;
 	}
-	console.log(a);
+	//console.log(a);
 	//return a;
 }
 function playall() { //Damn nice closure!
@@ -284,7 +284,18 @@ function playall() { //Damn nice closure!
 	}
 	function onClick(id) {
 		if (CurrentAudio === null) return; //Hmmmm not sure if i should leave this
-		CurrentSong = Number(id);
+		if (shuffled) {
+			//Find the song they clicked on
+			for (var i=0; i<Songs.length; i++) {
+				if (
+					Songs[i].parentNode.parentNode.getElementsByTagName('h2')[0].id
+					=== id) {
+						CurrentSong = i;
+					}
+			}
+		} else {
+			CurrentSong = Number(id);
+		}
 		pause();
 		play();
 	}
