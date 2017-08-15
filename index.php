@@ -115,9 +115,9 @@ function CreateHTMLCode($odir, $filename, $superrecursive,
 	if ($favicon === '') {
 		//Use MY server wide favicons, feel free to change to yours
 		$favicon = '
-	<link rel="shortcut icon" href="http://jazyserver.com/favicons/favicon.ico" />
-	<link rel="icon" type="image/png" href="http://jazyserver.com/favicons/favicon-96x96.png" />
-	<link rel="icon" type="image/png" href="http://jazyserver.com/favicons/favicon-32x32.png" />
+	<link rel="shortcut icon" href="https://jazyserver.com/favicons/favicon.ico" />
+	<link rel="icon" type="image/png" href="https://jazyserver.com/favicons/favicon-96x96.png" />
+	<link rel="icon" type="image/png" href="https://jazyserver.com/favicons/favicon-32x32.png" />
 		';
 	}
 }
@@ -175,9 +175,9 @@ SearchForPotentialAlbums(__DIR__, $INFECTDEPTH);
 <meta charset="UTF-8" />
 <?php echo $_favicon ?>
 <!--
-<link rel="shortcut icon" href="http://jazyserver.com/favicons/favicon.ico" />
-<link rel="icon" type="image/png" href="http://jazyserver.com/favicons/favicon-96x96.png" />
-<link rel="icon" type="image/png" href="http://jazyserver.com/favicons/favicon-32x32.png" />
+<link rel="shortcut icon" href="https://jazyserver.com/favicons/favicon.ico" />
+<link rel="icon" type="image/png" href="https://jazyserver.com/favicons/favicon-96x96.png" />
+<link rel="icon" type="image/png" href="https://jazyserver.com/favicons/favicon-32x32.png" />
 -->
 <meta name="author" content="Jazy Llerena" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
