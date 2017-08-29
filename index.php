@@ -488,6 +488,7 @@ function attachDownloads() {
 
 function downImage(e) {
 	//Check all images for the visible one
+	console.log('Down image');
 	var imgs = document.getElementsByClassName('albumart');
 	for (var i=0; i<imgs.length; i++) {
 		if (imgs[i].style.opacity === '1') {
@@ -579,7 +580,6 @@ function lazyLoadImages() {
 }
 function lazyLoadImg(img) {
 	img.setAttribute('src', img.getAttribute('data-src'));
-	console.log('Loaded');
 }
 
 function enableControls() {
@@ -604,9 +604,10 @@ window.onload = function() {
 	}
 
 	var imgs = document.getElementsByClassName('albumart');
-	for (var i=0; i<imgs.length; i++) {
-		imgs[i].addEventListener('click', downImage);
-	}
+	Array.prototype.forEach.call(imgs, function(img) {
+		img.addEventListener('click', downImage);
+	});
+
 	scrollAlbumArt();
 
 	var boxlabels = document.getElementsByClassName('boxlabel');
