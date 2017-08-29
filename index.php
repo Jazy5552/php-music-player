@@ -573,11 +573,13 @@ function disableAudioMode() {
 
 function lazyLoadImages() {
 	var imgs = document.getElementsByClassName('albumart');
-	imgs.onload = lazyLoadImg(e);
+	Array.prototype.forEach.call(imgs, function(img) {
+		lazyLoadImg(img);
+	});
 }
-function lazyLoadImg(e) {
-	var img = e.SrcElement;
+function lazyLoadImg(img) {
 	img.setAttribute('src', img.getAttribute('data-src'));
+	console.log('Loaded');
 }
 
 window.onload = function() {
@@ -607,7 +609,7 @@ window.onload = function() {
 
 	//attachDirs(); //No longer needed as the file/dir links are actual links now
 	attachDownloads();
-	lazyLoadImgs();
+	lazyLoadImages();
 }
 </script>
 <style>
