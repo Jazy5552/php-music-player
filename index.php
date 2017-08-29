@@ -53,44 +53,21 @@ function CreateHTMLCode($odir, $filename, $superrecursive,
 		if (strpos($file, '.mp3') !== false) {
 			$songsHTML .= '
 			<article class="song">
-				<div>
+				<div class="tooltip">
+					<i class="download-button hide fa fa-arrow-circle-o-down fa-2x"></i>
+					<span class="tooltiptext">' . $fs . '</span>
 					<h2 id="' . $i++ . '">' 
 					. substr(basename($file), 0, strpos(basename($file), '.mp3')) #Change to basename and use listed items
 					. '</h2>
 				</div>
-				<div class="tooltip">
+				<div>
 					<audio controls id="' . $file . '" 
           class="audio" preload="none" src="' 
 					. $file . '">
 					Not Supported
 					</audio>
-					<i class="download-button fa fa-arrow-circle-o-down fa-2x"></i>
-					<span class="tooltiptext">' . $fs . '</span>
 				</div>
 			</article>';
-		/*
-		 	} else if (strpos($file, '.mp4') !== false) {
-      //Video support (Maybe use videosHTML?)
-			//ug this will get thrown into the music player's autoplay...
-			//REMOVING THIS SHIT
-			$songsHTML .= '
-			<article class="song">
-				<div>
-					<h2 id="' . $i++ . '">' 
-					. substr($file, 2, strpos($file, '.mp4')-2) . ' (mp4)' #Change to basename and use listed items
-					. '</h2>
-				</div>
-				<div class="tooltip">
-					<video controls id="' . $file . '" 
-          class="audio" preload="none" src="' 
-					. $file . '">
-					Not Supported
-					</video>
-					<i class="download-button fa fa-arrow-circle-o-down fa-2x"></i>
-					<span class="tooltiptext">' . $fs . '</span>
-				</div>
-				</article>';
-		 */
 		} else if (strpos($file, '.jpg') !== false 
 				|| strpos($file, '.jpeg') !== false
 				|| strpos($file, '.png') !== false) {
@@ -111,7 +88,7 @@ function CreateHTMLCode($odir, $filename, $superrecursive,
 			if ($superrecursive) {
 				if (basename($file) !== '..') { //Dont show ../ directories
 					$songsHTML .= '<div class="box"><div class="boxlabel">'
-						. substr($file, 2) . '</div>';
+						. basename($file) . '</div>';
 					//Run this function into the directory
 					CreateHTMLCode($file . '/', $filename, $superrecursive, 
 						$imgsHTML, $imgFilesHTML, $songsHTML, $directoriesHTML, $favicon, $i, $deep);
@@ -138,9 +115,9 @@ function CreateHTMLCode($odir, $filename, $superrecursive,
 	if ($favicon === '') {
 		//Use MY server wide favicons, feel free to change to yours
 		$favicon = '
-	<link rel="shortcut icon" href="http://jazyserver.com/favicons/favicon.ico" />
-	<link rel="icon" type="image/png" href="http://jazyserver.com/favicons/favicon-96x96.png" />
-	<link rel="icon" type="image/png" href="http://jazyserver.com/favicons/favicon-32x32.png" />
+	<link rel="shortcut icon" href="https://jazyserver.com/favicons/favicon.ico" />
+	<link rel="icon" type="image/png" href="https://jazyserver.com/favicons/favicon-96x96.png" />
+	<link rel="icon" type="image/png" href="https://jazyserver.com/favicons/favicon-32x32.png" />
 		';
 	}
 }
@@ -198,9 +175,9 @@ SearchForPotentialAlbums(__DIR__, $INFECTDEPTH);
 <meta charset="UTF-8" />
 <?php echo $_favicon ?>
 <!--
-<link rel="shortcut icon" href="http://jazyserver.com/favicons/favicon.ico" />
-<link rel="icon" type="image/png" href="http://jazyserver.com/favicons/favicon-96x96.png" />
-<link rel="icon" type="image/png" href="http://jazyserver.com/favicons/favicon-32x32.png" />
+<link rel="shortcut icon" href="https://jazyserver.com/favicons/favicon.ico" />
+<link rel="icon" type="image/png" href="https://jazyserver.com/favicons/favicon-96x96.png" />
+<link rel="icon" type="image/png" href="https://jazyserver.com/favicons/favicon-32x32.png" />
 -->
 <meta name="author" content="Jazy Llerena" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -217,12 +194,13 @@ function shuffle(a) {
 		a[i] = a[j];
 		a[j] = x;
 	}
-	console.log(a);
+	//console.log(a);
 	//return a;
 }
 function playall() { //Damn nice closure!
+	//Setting things up
 	var CurrentSong = 0;
-	var CurrentAudio = null;
+	var CurrentAudio = document.getElementById('currentsong');
 	var CurrentLabel = document.getElementById('cslabel');
 	var Songs = document.getElementsByClassName('audio');
 	Songs = Array.prototype.slice.call(Songs, 0);
@@ -238,7 +216,8 @@ function playall() { //Damn nice closure!
 	var loop = false; //This is for all songs loop
 	var shuffled = false; //Keep track of shuffle
 	var oTitle = document.title;
-  var originalClass; //This is for the h2 headers and also disgusting
+	var originalClass; //This is for the h2 headers and also disgusting
+	//Pause and opaque all the songs
 	for (var i = 0; i < Songs.length; i++) {
 		Songs[i].pause();
 		Songs[i].parentNode.parentNode.style.opacity = notPlayingOpacity;
@@ -250,6 +229,13 @@ function playall() { //Damn nice closure!
 		Songs[i].parentNode.parentNode.getElementsByTagName('h2')[0].onclick 
       = function(){onClick(this.id);}; //Allow to click to jump to song
 	}
+	//Make download buttons visible
+	var dButtons = document.getElementsByClassName('download-button');
+	for (var i=0; i<dButtons.length; i++) {
+		dButtons[i].classList.toggle('hide');
+	}
+
+	//Done setting things up
 	function updateCurrentSong() {
 		console.log(CurrentSong + ' ' + CurrentAudio + ' ' + Songs.length + ' ' + Songs[CurrentSong].src);
 		//Make non playing transparent
@@ -262,9 +248,15 @@ function playall() { //Damn nice closure!
 		Songs[CurrentSong].parentNode.parentNode.style.opacity = '';
 		var cslabel = Songs[CurrentSong].parentNode.parentNode.getElementsByTagName('h2')[0].innerHTML;
 		document.title = '[' + cslabel + ']';
+		//Find album name if in super recursive mode
+		var p = Songs[CurrentSong].parentNode.parentNode.parentNode.getElementsByClassName('boxlabel')[0];
+		if (p) {
+			cslabel = '<div class="cslabel2">' 
+				+ p.innerHTML 
+				+ '</div>' 
+				+ cslabel;
+		}
 
-		//NOW CHANGE SRC
-		CurrentAudio = document.getElementById('currentsong');
 		CurrentLabel.style.display = 'block';
 		CurrentLabel.innerHTML = cslabel;
 		CurrentAudio.style.display = 'block';
@@ -292,7 +284,18 @@ function playall() { //Damn nice closure!
 	}
 	function onClick(id) {
 		if (CurrentAudio === null) return; //Hmmmm not sure if i should leave this
-		CurrentSong = Number(id);
+		if (shuffled) {
+			//Find the song they clicked on
+			for (var i=0; i<Songs.length; i++) {
+				if (
+					Songs[i].parentNode.parentNode.getElementsByTagName('h2')[0].id
+					=== id) {
+						CurrentSong = i;
+					}
+			}
+		} else {
+			CurrentSong = Number(id);
+		}
 		pause();
 		play();
 	}
@@ -313,16 +316,22 @@ function playall() { //Damn nice closure!
 		document.getElementById('play').innerHTML = bPausText;
 	}
 	function pause() {
-		if (CurrentAudio === null) return;
+		console.log('Paused');
 		CurrentAudio.pause();
 		CurrentAudio.removeEventListener('ended', onEnded);
+	}
+	function pauseUI() {
+		console.log('Paused UI');
 		document.getElementById('play').onclick = resume;
 		document.getElementById('play').innerHTML = bPlayText;
 	}
 	function resume() {
-		if (CurrentAudio === null) return; //Nasty safetys...
+		console.log('Resumed');
 		CurrentAudio.play();
 		CurrentAudio.addEventListener('ended', onEnded);
+	}
+	function resumeUI() {
+		console.log('Resumed UI');
 		document.getElementById('play').onclick = pause;
 		document.getElementById('play').innerHTML = bPausText;
 	}
@@ -340,6 +349,10 @@ function playall() { //Damn nice closure!
         = originalClass;
 			Songs[i].removeAttribute('style');
 		}
+		var dButtons = document.getElementsByClassName('download-button');
+		for (var i=0; i<dButtons.length; i++) {
+			dButtons[i].classList.toggle('hide');
+		}
 		document.title = oTitle;
 		CurrentSong = 0;
 		CurrentLabel.style.display = '';
@@ -347,7 +360,10 @@ function playall() { //Damn nice closure!
 		CurrentAudio.parentNode.getElementsByTagName('h2')[0].innerHTML = '';
 		CurrentAudio.removeAttribute('style');
 		CurrentAudio.loop = false;
-		CurrentAudio = null;
+		//Remove all event listeners by cloning the element
+		var tmp = CurrentAudio.cloneNode(true);
+		CurrentAudio.parentNode.replaceChild(tmp, CurrentAudio);
+		CurrentAudio = null; //Why you do dis?
 		loop = false;
 		document.getElementById('play').onclick = playall;
 		document.getElementById('play').innerHTML = bDefaText;
@@ -397,6 +413,8 @@ function playall() { //Damn nice closure!
 	document.getElementById('stop').onclick = stop;
 	document.getElementById('loop').onclick = loopToggle;
 	document.getElementById('shuffle').onclick = shuffleToggle;
+	CurrentAudio.addEventListener('pause', pauseUI);
+	CurrentAudio.addEventListener('play', resumeUI);
 	play();
 }
 
@@ -462,7 +480,7 @@ function attachDownloads() {
   for (var i=0; i<dButtons.length; i++) {
     dButtons[i].addEventListener('click', function() {
       //Download the song
-      var audio = this.parentNode.getElementsByTagName('audio')[0];
+      var audio = this.parentNode.parentNode.getElementsByTagName('audio')[0];
 			download(audio.id);
     });
   }
@@ -604,9 +622,12 @@ header {
 	cursor: default;
 	user-select: none;
 }
+.hide {
+	display: none;
+}
 .fa-arrow-circle-o-down {
   position: relative;
-  top: -3px; /*The shit i put up with...*/
+  top: 0.15em; /*The shit i put up with...*/
 	-webkit-cursor: pointer;
 	-moz-cursor: pointer;
 	-ms-cursor: pointer;
@@ -656,6 +677,10 @@ header {
 		position: relative;
     left: 50%;
 		transform: translateX(-50%);
+		width: 100%;
+	}
+	.wrapper {
+		width: 100%;
 	}
 }
 img.albumart {
@@ -733,6 +758,13 @@ img.albumart {
 }
 .closedbox {
 	border-style: outset;
+}
+
+.cslabel2 {
+	font-size: 0.7em;
+	font-style: normal;
+	font-weight: normal;
+	text-align: center;
 }
 
 .dir a:hover {
