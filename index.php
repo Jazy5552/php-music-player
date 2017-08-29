@@ -582,6 +582,13 @@ function lazyLoadImg(img) {
 	console.log('Loaded');
 }
 
+function enableControls() {
+	var buts = document.getElementById('controls').getElementsByTagName('button');
+	Array.prototype.forEach.call(buts, function(but) {
+		but.disabled = false;
+	});
+}
+
 window.onload = function() {
 	var pa = document.getElementById('play');
 	if (pa !== null) {
@@ -609,6 +616,7 @@ window.onload = function() {
 
 	//attachDirs(); //No longer needed as the file/dir links are actual links now
 	attachDownloads();
+	enableControls();
 	lazyLoadImages();
 }
 </script>
@@ -873,12 +881,12 @@ if ($_songsHTML !== '') {
 	<!--<div id='controllabel'>Controls for playing all the songs</div>-->
 	<div>
 		<span><h2 id="cslabel"></h2><audio id="currentsong" preload="auto" controls></audio></span>
-		<button type="button" id="previous"><!--PREVIOUS--><i class="fa fa-step-backward" aria-hidden="true"></i></button>
-		<button type="button" id="play"><i class="fa fa-play" aria-hidden="true"></i></button>
-		<button type="button" id="next"><!--NEXT--><i class="fa fa-step-forward" aria-hidden="true"></i></button>
-		<button type="button" id="stop"><!--STOP--><i class="fa fa-stop" aria-hidden="true"></i></button>
-		<button type="button" id="shuffle"><!--SHUFFLE--><i class="fa fa-random" aria-hidden="true"></i></button>
-		<button type="button" id="loop">LOOP OFF</button>
+		<button disabled type="button" id="previous"><!--PREVIOUS--><i class="fa fa-step-backward" aria-hidden="true"></i></button>
+		<button disabled type="button" id="play"><i class="fa fa-play" aria-hidden="true"></i></button>
+		<button disabled type="button" id="next"><!--NEXT--><i class="fa fa-step-forward" aria-hidden="true"></i></button>
+		<button disabled type="button" id="stop"><!--STOP--><i class="fa fa-stop" aria-hidden="true"></i></button>
+		<button disabled type="button" id="shuffle"><!--SHUFFLE--><i class="fa fa-random" aria-hidden="true"></i></button>
+		<button disabled type="button" id="loop">LOOP OFF</button>
 	</div>
 </section>
 <?php
