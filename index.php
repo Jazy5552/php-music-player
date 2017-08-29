@@ -96,7 +96,7 @@ function CreateHTMLCode($odir, $filename, $superrecursive,
 				|| strpos($file, '.png') !== false) {
 			#Use the all jpg/png as the album cover
 			$imgsHTML .= '<img class="albumart" 
-				src="' . $file . '"
+				data-src="' . $file . '"
 				loc="' . $file . '"></img>';
 			#Create a files html in case audio mode is turned off
 			$imgFilesHTML .= '<article class="file image">
@@ -553,6 +553,15 @@ function disableAudioMode() {
 	document.getElementById('controls').style.display = 'none';
 }
 
+function lazyLoadImages() {
+	var imgs = document.getElementsByClassName('albumart');
+	imgs.onload = lazyLoadImg(e);
+}
+function lazyLoadImg(e) {
+	var img = e.SrcElement;
+	img.setAttribute('src', img.getAttribute('data-src'));
+}
+
 window.onload = function() {
 	var pa = document.getElementById('play');
 	if (pa !== null) {
@@ -580,6 +589,7 @@ window.onload = function() {
 
 	//attachDirs(); //No longer needed as the file/dir links are actual links now
 	attachDownloads();
+	lazyLoadImgs();
 }
 </script>
 <style>
