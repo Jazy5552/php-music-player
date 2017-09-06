@@ -583,7 +583,9 @@ function lazyLoadImg(img) {
 }
 
 function enableControls() {
-	var buts = document.getElementById('controls').getElementsByTagName('button');
+	var controls = document.getElementById('controls')
+	if (controls === null) return; //Controls not present
+	var buts = controls.getElementsByTagName('button');
 	Array.prototype.forEach.call(buts, function(but) {
 		but.disabled = false;
 	});
