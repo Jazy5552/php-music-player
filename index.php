@@ -1,12 +1,13 @@
 <?php
+//TODO Get rid of these stupid fucking strtolowers!
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['down'])) {
   //Client wants to download a file lets give it to em
   $file = $_GET['down'];
 
 	//Only allow mp3/mp4 and images
-	if ((strpos($file, '.mp') === false 
-		&& strpos($file, 'jpg') === false
-		&& strpos($file, 'png') === false)
+	if ((strpos(strtolower($file), '.mp') === false 
+		&& strpos(strtolower($file), 'jpg') === false
+		&& strpos(strtolower($file), 'png') === false)
     || file_exists($file) === false) {
     //Not an mp3/4? fk off
     die('Unauthorized');
@@ -50,14 +51,14 @@ function CreateHTMLCode($odir, $filename, $superrecursive,
 		$file = $odir . $file;
 		//Get the filesize
 		$fs = human_filesize(filesize($file));
-		if (strpos($file, '.mp3') !== false) {
+		if (strpos(strtolower($file), '.mp3') !== false) {
 			$songsHTML .= '
 			<article class="song">
 				<div class="tooltip">
 					<i class="download-button hide fa fa-arrow-circle-o-down fa-2x"></i>
 					<span class="tooltiptext">' . $fs . '</span>
 					<h2 id="' . $i++ . '">' 
-					. substr(basename($file), 0, strpos(basename($file), '.mp3')) #Change to basename and use listed items
+					. substr(basename($file), 0, strpos(basename(strtolower($file)), '.mp3')) #Change to basename and use listed items
 					. '</h2>
 				</div>
 				<div>
@@ -68,9 +69,9 @@ function CreateHTMLCode($odir, $filename, $superrecursive,
 					</audio>
 				</div>
 			</article>';
-		} else if (strpos($file, '.jpg') !== false 
-				|| strpos($file, '.jpeg') !== false
-				|| strpos($file, '.png') !== false) {
+		} else if (strpos(strtolower($file), '.jpg') !== false 
+				|| strpos(strtolower($file), '.jpeg') !== false
+				|| strpos(strtolower($file), '.png') !== false) {
 			#Use the all jpg/png as the album cover
 			$imgsHTML .= '<img class="albumart" 
 				data-src="' . $file . '"
@@ -145,7 +146,7 @@ $filename = basename(__FILE__);
 function HasSongs($dirname) {
   $d = scandir($dirname);
   foreach ($d as $file) {
-    if (strpos($file, '.mp') !== false) {
+    if (strpos(strtolower($file), '.mp') !== false) {
       return true;
     }
   }
