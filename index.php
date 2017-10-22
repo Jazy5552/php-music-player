@@ -5,23 +5,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['down'])) {
   $file = $_GET['down'];
 
 	//Only allow mp3/mp4 and images
-	if ((strpos(strtolower($file), '.mp') === false 
+	if ((strpos(strtolower($file), '.mp') === false
 		&& strpos(strtolower($file), 'jpg') === false
 		&& strpos(strtolower($file), 'png') === false)
     || file_exists($file) === false) {
     //Not an mp3/4? fk off
     die('Unauthorized');
   }
-  
+
   header('Content-Type: application/octet-stream');
-  header('Content-Transfer-Encoding: Binary'); 
-	header('Content-Disposition: attachment; filename="' .basename($file). '"'); 
+  header('Content-Transfer-Encoding: Binary');
+	header('Content-Disposition: attachment; filename="' .basename($file). '"');
 	header('Content-Length: ' . filesize($file));
   readfile($file); // do the double-download-dance (dirty but worky)
   die();
 }
 //WARNING Change this depending on what you want the file to do
-$INFECTDEPTH = 3; //Depth at which this index file will clone itself into directories 
+$INFECTDEPTH = 3; //Depth at which this index file will clone itself into directories
 //Set INFECTDEPTH to 0 to prevent this file from cloning itself
 //NOTE: Each iteration will clone it self deeper when accessed. This is just
 //to dampen the general server load. aka: shitty coding
@@ -39,7 +39,7 @@ $_favicon = '';
 $_i = 0; #Used as the ID for the songs
 $_deep = 10; #Limit recursions
 
-function CreateHTMLCode($odir, $filename, $superrecursive, 
+function CreateHTMLCode($odir, $filename, $superrecursive,
 	&$imgsHTML, &$imgFilesHTML, &$songsHTML, &$directoriesHTML, &$favicon, &$i, $deep) {
 	if ($deep < 1) { //Recursion control
 		return;
@@ -57,23 +57,23 @@ function CreateHTMLCode($odir, $filename, $superrecursive,
 				<div class="tooltip">
 					<i class="download-button hide fa fa-arrow-circle-o-down fa-2x"></i>
 					<span class="tooltiptext">' . $fs . '</span>
-					<h2 id="' . $i++ . '">' 
+					<h2 id="' . $i++ . '">'
 					. substr(basename($file), 0, strpos(basename(strtolower($file)), '.mp3')) #Change to basename and use listed items
 					. '</h2>
 				</div>
 				<div>
-					<audio controls id="' . $file . '" 
-          class="audio" preload="none" src="' 
+					<audio controls id="' . $file . '"
+          class="audio" preload="none" src="'
 					. $file . '">
 					Not Supported
 					</audio>
 				</div>
 			</article>';
-		} else if (strpos(strtolower($file), '.jpg') !== false 
+		} else if (strpos(strtolower($file), '.jpg') !== false
 				|| strpos(strtolower($file), '.jpeg') !== false
 				|| strpos(strtolower($file), '.png') !== false) {
 			#Use the all jpg/png as the album cover
-			$imgsHTML .= '<img class="albumart" 
+			$imgsHTML .= '<img class="albumart"
 				data-src="' . $file . '"
 				loc="' . $file . '"></img>';
 			#Create a files html in case audio mode is turned off
@@ -91,7 +91,7 @@ function CreateHTMLCode($odir, $filename, $superrecursive,
 					$songsHTML .= '<div class="box"><div class="boxlabel">'
 						. basename($file) . '</div>';
 					//Run this function into the directory
-					CreateHTMLCode($file . '/', $filename, $superrecursive, 
+					CreateHTMLCode($file . '/', $filename, $superrecursive,
 						$imgsHTML, $imgFilesHTML, $songsHTML, $directoriesHTML, $favicon, $i, $deep);
 					$songsHTML .= '</div>';
 					//TODO Remove empty box divs
@@ -102,8 +102,8 @@ function CreateHTMLCode($odir, $filename, $superrecursive,
         ' . substr($file, 2) . '</a></div>
 				</article>';
 			}
-		} else if (basename($file) !== '.' 
-			&& basename($file) !== '..' 
+		} else if (basename($file) !== '.'
+			&& basename($file) !== '..'
 			&& $superrecursive !== true //Dont show files/dirs when in recursive mode
 			&& basename($file) !== $filename) {
 			//Display file name
@@ -125,18 +125,18 @@ function CreateHTMLCode($odir, $filename, $superrecursive,
 //Will be adding index.php files RECURSIVELY WARNING
 function SearchForPotentialAlbums($dirname, $x) {
 $filename = basename(__FILE__);
-  if ($x < 1) { 
+  if ($x < 1) {
     //Stop recursion
     return;
   }
   $d = scandir($dirname);
   foreach ($d as $file) {
-		if (is_dir($dirname . '/' . $file) 
-			&& $file !== '.' 
+		if (is_dir($dirname . '/' . $file)
+			&& $file !== '.'
 			&& $file !== '..') {
-				if (!file_exists($dirname . '/' . $file . '/' . $filename) 
+				if (!file_exists($dirname . '/' . $file . '/' . $filename)
           && is_writable($dirname . '/' . $file) ){
-					//&& HasSongs($dirname . '/' . $file)) { 
+					//&& HasSongs($dirname . '/' . $file)) {
         copy('./' . $filename, $dirname . '/' . $file . '/' . $filename);
       }
       SearchForPotentialAlbums($dirname . '/' . $file, $x - 1);
@@ -163,7 +163,7 @@ if ($superrecursive) {
 	//echo '<h3>Super recursion enabled!</h3>';
 }
 
-CreateHTMLCode($_dir, $_filename, $superrecursive, 
+CreateHTMLCode($_dir, $_filename, $superrecursive,
 	$_imgsHTML, $_imgFilesHTML, $_songsHTML, $_directoriesHTML, $_favicon, $_i, $_deep);
 
 //WARNING FUCKING SAVAGE AHEAD
@@ -184,8 +184,8 @@ SearchForPotentialAlbums(__DIR__, $INFECTDEPTH);
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <!-- CDN Link with some cool free icons! -->
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
-<script>	
-function shuffle(a) { 
+<script>
+function shuffle(a) {
 	//Shuffles the array (So basic...)
 	var i = a.length, x, j;
 	while (--i) {
@@ -211,7 +211,7 @@ function playall() { //Damn nice closure!
 	var bDefaText = document.getElementById('play').innerHTML;
 	var bLoopSingText = 'LOOP SINGLE';
 	var bLoopAllText = 'LOOP ALL';
-	var bLoopDefaText = document.getElementById('loop').innerHTML; 
+	var bLoopDefaText = document.getElementById('loop').innerHTML;
 	var bShuffleDefaText = document.getElementById('shuffle').innerHTML;
 	var notPlayingOpacity = 0.5;
 	var loop = false; //This is for all songs loop
@@ -227,7 +227,7 @@ function playall() { //Damn nice closure!
 		originalClass = Songs[i].parentNode.parentNode.getElementsByTagName('h2')[0].className;
 		Songs[i].parentNode.parentNode.getElementsByTagName('h2')[0].className
       = originalClass + ' defaultCursor';
-		Songs[i].parentNode.parentNode.getElementsByTagName('h2')[0].onclick 
+		Songs[i].parentNode.parentNode.getElementsByTagName('h2')[0].onclick
       = function(){onClick(this.id);}; //Allow to click to jump to song
 	}
 	//Make download buttons visible
@@ -252,9 +252,9 @@ function playall() { //Damn nice closure!
 		//Find album name if in super recursive mode
 		var p = Songs[CurrentSong].parentNode.parentNode.parentNode.getElementsByClassName('boxlabel')[0];
 		if (p) {
-			cslabel = '<div class="cslabel2">' 
-				+ p.innerHTML 
-				+ '</div>' 
+			cslabel = '<div class="cslabel2">'
+				+ p.innerHTML
+				+ '</div>'
 				+ cslabel;
 		}
 
@@ -368,7 +368,7 @@ function playall() { //Damn nice closure!
 		loop = false;
 		document.getElementById('play').onclick = playall;
 		document.getElementById('play').innerHTML = bDefaText;
-		document.getElementById('loop').innerHTML = bLoopDefaText; 
+		document.getElementById('loop').innerHTML = bLoopDefaText;
 		document.getElementById('shuffle').innerHTML = bShuffleDefaText;
 		document.getElementById('shuffle').className = '';
 	}
@@ -392,10 +392,10 @@ function playall() { //Damn nice closure!
 	}
 	function loopToggle() { //This is terrible to understand...sry
 	if (CurrentAudio === null) return;
-		loopbutton = document.getElementById('loop'); 
+		loopbutton = document.getElementById('loop');
 		if (loop) { //Disable all loops
 			loop = false;
-			loopbutton.innerHTML = bLoopDefaText; 
+			loopbutton.innerHTML = bLoopDefaText;
 		} else if (!loop && !CurrentAudio.loop) { //Enable single song loop (FIRST)
 			CurrentAudio.loop = true;
 			loopbutton.innerHTML = bLoopSingText;
@@ -429,7 +429,7 @@ function scrollAlbumArt() {
   //DONT Display the first one
 	/*
   imgs[0].style.opacity = '1';
-	if (imgs.length === 1) { 
+	if (imgs.length === 1) {
 		//Only 1 was found just display it
 		return;
   }
@@ -721,9 +721,9 @@ img.albumart {
 	-moz-cursor: pointer;
 	-ms-cursor: pointer;
 	cursor: pointer;
-	-webkit-user-select: none;  
-  -moz-user-select: none;    
-  -ms-user-select: none;      
+	-webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
   user-select: none;
 }
 .file a:hover {
@@ -904,12 +904,12 @@ if ($_songsHTML !== '') {
 </section>
 <section id="dirs">
 <div class="wrapper">
-<?php 
+<?php
 echo $_directoriesHTML;
 if ($_songsHTML === '') {
 	#No songs so disable audio mode and show images as files
 	echo $_imgFilesHTML;
-} 
+}
 ?>
 </div>
 </section>
