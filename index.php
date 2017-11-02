@@ -2,7 +2,15 @@
 //TODO Get rid of these stupid fucking strtolowers!
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['down'])) {
   //Client wants to download a file lets give it to em
-  $file = $_GET['down'];
+	$file = $_GET['down'];
+
+	//Ensure the file is in a sub dir of this file (Security)
+	$curDir = __DIR__ . '/';
+	$fullPath = realpath($curDir . $file);
+	if (strpos($fullPath, $curDir) !== 0) {
+		die('Unauthorized');
+	}
+	$file = $fullPath;
 
 	//Only allow mp3/mp4 and images
 	if ((strpos(strtolower($file), '.mp') === false
