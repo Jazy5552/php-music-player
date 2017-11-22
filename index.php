@@ -211,6 +211,8 @@ function playall() { //Damn nice closure!
 	var CurrentSong = 0;
 	var CurrentAudio = document.getElementById('currentsong');
 	var CurrentLabel = document.getElementById('cslabel');
+	var LoadingSpinner = document.getElementById('controls').
+		getElementsByClassName('fa-spinner')[0];
 	var Songs = document.getElementsByClassName('audio');
 	Songs = Array.prototype.slice.call(Songs, 0);
 	var OriginalSongs = Songs.slice(0); //clone
@@ -225,16 +227,13 @@ function playall() { //Damn nice closure!
 	var loop = false; //This is for all songs loop
 	var shuffled = false; //Keep track of shuffle
 	var oTitle = document.title;
-	var originalClass; //This is for the h2 headers and also disgusting
 	//Pause and opaque all the songs
 	for (var i = 0; i < Songs.length; i++) {
 		Songs[i].pause();
 		Songs[i].parentNode.parentNode.style.opacity = notPlayingOpacity;
 		Songs[i].style.display = 'none';
-    //Save the original classname for when stop is hit
-		originalClass = Songs[i].parentNode.parentNode.getElementsByTagName('h2')[0].className;
-		Songs[i].parentNode.parentNode.getElementsByTagName('h2')[0].className
-      = originalClass + ' defaultCursor';
+		Songs[i].parentNode.parentNode.getElementsByTagName('h2')[0].
+      classList.add('defaultCursor');
 		Songs[i].parentNode.parentNode.getElementsByTagName('h2')[0].onclick
       = function(){onClick(this.id);}; //Allow to click to jump to song
 	}
@@ -280,11 +279,11 @@ function playall() { //Damn nice closure!
 		if (!shuffled) {
 			shuffle(Songs);
 			shuffled = true;
-			shufflebutton.className = 'activated'; //Removes other classes!
+			shufflebutton.classList.add('activated');
 		} else {
 			Songs = OriginalSongs.slice(0);
 			shuffled = false;
-			shufflebutton.className = '';
+			shufflebutton.classList.remove('activated');
 			next();
 		}
 		pause();
@@ -331,6 +330,7 @@ function playall() { //Damn nice closure!
 	}
 	function pauseUI() {
 		console.log('Paused UI');
+		if (CurrentAudio === null) return;
 		document.getElementById('play').onclick = resume;
 		document.getElementById('play').innerHTML = bPlayText;
 	}
@@ -341,6 +341,7 @@ function playall() { //Damn nice closure!
 	}
 	function resumeUI() {
 		console.log('Resumed UI');
+		if (CurrentAudio === null) return;
 		document.getElementById('play').onclick = pause;
 		document.getElementById('play').innerHTML = bPausText;
 	}
@@ -353,9 +354,10 @@ function playall() { //Damn nice closure!
 			Songs[i].removeEventListener('ended', onEnded);
 			Songs[i].parentNode.parentNode.removeAttribute('style');
       //Remove to jump click
-      Songs[i].parentNode.parentNode.getElementsByTagName('h2')[0].onclick = '';
-      Songs[i].parentNode.parentNode.getElementsByTagName('h2')[0].className
-        = originalClass;
+			Songs[i].parentNode.parentNode.getElementsByTagName('h2')[0].
+				onclick = '';
+      Songs[i].parentNode.parentNode.getElementsByTagName('h2')[0].
+        classList.remove('defaultCursor');
 			Songs[i].removeAttribute('style');
 		}
 		var dButtons = document.getElementsByClassName('download-button');
@@ -374,11 +376,12 @@ function playall() { //Damn nice closure!
 		CurrentAudio.parentNode.replaceChild(tmp, CurrentAudio);
 		CurrentAudio = null; //Why you do dis?
 		loop = false;
+		songLoaded();
 		document.getElementById('play').onclick = playall;
 		document.getElementById('play').innerHTML = bDefaText;
 		document.getElementById('loop').innerHTML = bLoopDefaText;
 		document.getElementById('shuffle').innerHTML = bShuffleDefaText;
-		document.getElementById('shuffle').className = '';
+		document.getElementById('shuffle').classList.remove('activated');
 	}
 	function next() {
 		if (CurrentAudio === null) return; //Nasty safetys...
@@ -414,6 +417,14 @@ function playall() { //Damn nice closure!
 		}
 	}
 
+	//Remove loading spinner
+	function songLoaded() {
+			LoadingSpinner.classList.add('hide');
+	}
+	function songLoading() {
+			LoadingSpinner.classList.remove('hide');
+	}
+
 	//Attach events to buttons
 	document.getElementById('play').onclick = pause; //Override playall
 	document.getElementById('play').innerHTML = bPausText;
@@ -424,6 +435,9 @@ function playall() { //Damn nice closure!
 	document.getElementById('shuffle').onclick = shuffleToggle;
 	CurrentAudio.addEventListener('pause', pauseUI);
 	CurrentAudio.addEventListener('play', resumeUI);
+	//CurrentAudio.addEventListener('canplay', songLoaded);
+	CurrentAudio.addEventListener('loadeddata', songLoaded);
+	CurrentAudio.addEventListener('loadstart', songLoading);
 	play();
 }
 
@@ -685,6 +699,11 @@ header {
 #controls #loop {
 	width: 7em;
 }
+#controls .fa-spinner {
+	position: absolute;
+	top: 6px;
+	left: 3px;
+}
 #currentsong {
 	display: none;
 	margin: 5px 0px 5px 0px;
@@ -853,7 +872,7 @@ a.link {
 
 	/* Position the tooltip text - see examples below! */
 	position: absolute;
-	top: 2.5px;
+	top: 0.4em;
 	right: -7em;
 	z-index: 1;
 }
@@ -893,12 +912,13 @@ if ($_songsHTML !== '') {
 	<!--<div id='controllabel'>Controls for playing all the songs</div>-->
 	<div>
 		<span><h2 id="cslabel"></h2><audio id="currentsong" preload="auto" controls></audio></span>
-		<button disabled type="button" id="previous"><!--PREVIOUS--><i class="fa fa-step-backward" aria-hidden="true"></i></button>
-		<button disabled type="button" id="play"><i class="fa fa-play" aria-hidden="true"></i></button>
-		<button disabled type="button" id="next"><!--NEXT--><i class="fa fa-step-forward" aria-hidden="true"></i></button>
-		<button disabled type="button" id="stop"><!--STOP--><i class="fa fa-stop" aria-hidden="true"></i></button>
-		<button disabled type="button" id="shuffle"><!--SHUFFLE--><i class="fa fa-random" aria-hidden="true"></i></button>
-		<button disabled type="button" id="loop">LOOP OFF</button>
+		<button class="control" disabled type="button" id="previous"><!--PREVIOUS--><i class="fa fa-step-backward" aria-hidden="true"></i></button>
+		<button class="control" disabled type="button" id="play"><i class="fa fa-play" aria-hidden="true"></i></button>
+		<button class="control" disabled type="button" id="next"><!--NEXT--><i class="fa fa-step-forward" aria-hidden="true"></i></button>
+		<button class="control" disabled type="button" id="stop"><!--STOP--><i class="fa fa-stop" aria-hidden="true"></i></button>
+		<button class="control" disabled type="button" id="shuffle"><!--SHUFFLE--><i class="fa fa-random" aria-hidden="true"></i></button>
+		<button class="control" disabled type="button" id="loop">LOOP OFF</button>
+		<i class="control fa fa-lg fa-spinner fa-spin hide" aria-hidden="true"></i>
 	</div>
 </section>
 <?php
