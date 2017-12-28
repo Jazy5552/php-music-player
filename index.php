@@ -82,8 +82,7 @@ function CreateHTMLCode($odir, $filename, $superrecursive,
 				|| strpos(strtolower($file), '.png') !== false) {
 			#Use the all jpg/png as the album cover
 			$imgsHTML .= '<img class="albumart"
-				data-src="' . $file . '"
-				loc="' . $file . '"></img>';
+				data-src="' . $file . '"></img>';
 			#Create a files html in case audio mode is turned off
 			$imgFilesHTML .= '<article class="file image">
 			<div class="tooltip"><a class="defaultCursor link" href="' . $file . '" id="' . $file . '"><i class="fa fa-file-o" aria-hidden="true"></i>
@@ -515,7 +514,7 @@ function downImage(e) {
 	var imgs = document.getElementsByClassName('albumart');
 	for (var i=0; i<imgs.length; i++) {
 		if (imgs[i].style.opacity === '1') {
-			download(imgs[i].getAttribute('loc'));
+			download(imgs[i].getAttribute('data-src'));
 			return;
 		}
 	}
@@ -651,9 +650,9 @@ body {
 }
 header {
 	font-size: 3em;
-	text-shadow: 1px 1px gray;
+	/*text-shadow: 1px 1px gray;*/
   overflow-x: auto;
-  text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;
+	/*text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;*/
 	color: black;
 	cursor: default;
 	user-select: none;
@@ -766,7 +765,7 @@ img.albumart {
   margin-bottom: 2px;
 	display: inline-block;
 	font-size: 1.2em;
-  text-shadow: 1px 0px white, -1px 0px white, 0px 1px white, 0px -1px white;
+	/*text-shadow: 1px 0px white, -1px 0px white, 0px 1px white, 0px -1px white;*/
   padding: 2px 2px 2px 2px;
   border: solid 2px blue;
 	transition: all 1s;
@@ -821,7 +820,7 @@ img.albumart {
   margin-bottom: 2px;
 	display: inline-block;
 	font-size: 1.2em;
-  text-shadow: 1px 0px white, -1px 0px white, 0px 1px white, 0px -1px white;
+	/*text-shadow: 1px 0px white, -1px 0px white, 0px 1px white, 0px -1px white;*/
   padding: 2px 2px 2px 2px;
   border: solid 2px black;
 	transition: all 1s;
@@ -848,7 +847,7 @@ a.link {
 .song h2 {
 	display: inline-block;
 	font-size: 1.2em;
-  text-shadow: 1px 0px white, -1px 0px white, 0px 1px white, 0px -1px white;
+	/*text-shadow: 1px 0px white, -1px 0px white, 0px 1px white, 0px -1px white;*/
   transition: all 1s;
 }
 .song h2.defaultCursor:hover {
