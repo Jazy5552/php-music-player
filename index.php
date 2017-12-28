@@ -824,7 +824,7 @@ img.albumart {
   padding: 2px 2px 2px 2px;
   border: solid 2px black;
 	transition: all 1s;
-	user-select: none;
+	/*user-select: none;*/
 }
 
 a.link {
