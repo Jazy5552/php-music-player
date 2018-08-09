@@ -62,12 +62,14 @@ function CreateHTMLCode($odir, $filename, $superrecursive,
 		if (strpos(strtolower($file), '.mp3') !== false) {
 			$songsHTML .= '
 			<article class="song">
-				<div class="tooltip">
+				<div>
 					<i class="download-button hide fa fa-arrow-circle-o-down fa-2x"></i>
-					<span class="tooltiptext">' . $fs . '</span>
-					<h2 id="' . $i++ . '">'
-					. substr(basename($file), 0, strpos(basename(strtolower($file)), '.mp3')) #Change to basename and use listed items
-					. '</h2>
+					<div class="tooltip">
+						<h2 id="' . $i++ . '">'
+						. substr(basename($file), 0, strpos(basename(strtolower($file)), '.mp3')) #Change to basename and use listed items
+						. '</h2>
+						<span class="tooltiptext">' . $fs . '</span>
+					</div>
 				</div>
 				<div>
 					<audio controls id="' . $file . '"
@@ -890,7 +892,7 @@ a.link {
 
 	/* Position the tooltip text - see examples below! */
 	position: absolute;
-	top: 0.4em;
+	top: -0.2em;
 	right: -7em;
 	z-index: 1;
 }
