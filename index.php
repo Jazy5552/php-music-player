@@ -613,6 +613,24 @@ function enableControls() {
 	});
 }
 
+function audioScroll(e) {
+	e.preventDefault();
+	var el = e.srcElement;
+	// deltaY is usually -100 (up) or 100 (down)
+	var newVolume = el.volume - (e.deltaY / 1000);
+	if (newVolume < 0) newVolume = 0;
+	if (newVolume > 1) newVolume = 1;
+
+	el.volume = newVolume;
+}
+
+function attachAudioEvents() {
+	var audios = document.getElementsByTagName('audio');
+	Array.prototype.forEach.call(audios, function(audio) {
+		audio.addEventListener('wheel', audioScroll);
+	});
+}
+
 window.onload = function() {
 	var pa = document.getElementById('play');
 	if (pa !== null) {
@@ -643,6 +661,7 @@ window.onload = function() {
 	attachDownloads();
 	enableControls();
 	lazyLoadImages();
+	attachAudioEvents();
 }
 </script>
 <style>
