@@ -62,12 +62,14 @@ function CreateHTMLCode($odir, $filename, $superrecursive,
 		if (strpos(strtolower($file), '.mp3') !== false) {
 			$songsHTML .= '
 			<article class="song">
-				<div class="tooltip">
+				<div>
 					<i class="download-button hide fa fa-arrow-circle-o-down fa-2x"></i>
-					<span class="tooltiptext">' . $fs . '</span>
-					<h2 id="' . $i++ . '">'
-					. substr(basename($file), 0, strpos(basename(strtolower($file)), '.mp3')) #Change to basename and use listed items
-					. '</h2>
+					<div class="tooltip">
+						<h2 id="' . $i++ . '">'
+						. substr(basename($file), 0, strpos(basename(strtolower($file)), '.mp3')) #Change to basename and use listed items
+						. '</h2>
+						<span class="tooltiptext">' . $fs . '</span>
+					</div>
 				</div>
 				<div>
 					<audio controls id="' . $file . '"
@@ -192,6 +194,41 @@ SearchForPotentialAlbums(__DIR__, $INFECTDEPTH);
 <!-- CDN Link with some cool free icons! -->
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
 <script>
+// Should not be created more than once...
+var VolumeBarController = function(barContainerElement) {
+	// Create visual bar
+	var bar = document.createElement("div");
+	bar.style.width = '0px';
+	bar.className = 'volume-bar';
+	barContainerElement.appendChild(bar);
+
+	function update() {
+		window.requestAnimationFrame(function(timestamp) {
+			bar.style.width = volume*100 + "%";
+		});
+	}
+
+	// Meant to be passed to an audio element as an event handler
+	function onvolumechangehandler(e) {
+		var src = e.target || e.srcElement;
+		volume = src.volume;
+		update();
+	}
+	function reset() {
+		volume = 0;
+		update();
+	}
+
+	function attach(audioElement) {
+		audioElement.addEventListener('volumechange', onvolumechangehandler);
+		audioElement.addEventListener('play', onvolumechangehandler);
+	}
+
+	return {
+		'attach': attach,
+	};
+};
+
 function shuffle(a) {
 	//Shuffles the array (So basic...)
 	var i = a.length, x, j;
@@ -205,10 +242,12 @@ function shuffle(a) {
 	//console.log(a);
 	//return a;
 }
-function playall() { //Damn nice closure!
+function playall() { //Damn nice closure! (No it's fucking not)
 	//Setting things up
+	var vbc = new VolumeBarController(document.getElementById('volume-visual-bar'));
 	var CurrentSong = 0;
 	var CurrentAudio = document.getElementById('currentsong');
+	vbc.attach(CurrentAudio);
 	var CurrentLabel = document.getElementById('cslabel');
 	var LoadingSpinner = document.getElementById('controls').
 		getElementsByClassName('fa-spinner')[0];
@@ -613,6 +652,24 @@ function enableControls() {
 	});
 }
 
+function audioScroll(e) {
+	e.preventDefault();
+	var el = e.target || e.srcElement;
+	// deltaY is usually -100 (up) or 100 (down)
+	var newVolume = el.volume - (e.deltaY / 1000);
+	if (newVolume < 0) newVolume = 0;
+	if (newVolume > 1) newVolume = 1;
+
+	el.volume = newVolume;
+}
+
+function attachAudioEvents() {
+	var audios = document.getElementsByTagName('audio');
+	Array.prototype.forEach.call(audios, function(audio) {
+		audio.onwheel = audioScroll;
+	});
+}
+
 window.onload = function() {
 	var pa = document.getElementById('play');
 	if (pa !== null) {
@@ -643,6 +700,7 @@ window.onload = function() {
 	attachDownloads();
 	enableControls();
 	lazyLoadImages();
+	attachAudioEvents();
 }
 </script>
 <style>
@@ -705,7 +763,7 @@ header {
 }
 #currentsong {
 	display: none;
-	margin: 5px 0px 5px 0px;
+	margin: 5px;
 	padding: 0px;
 }
 @media all and (max-width: 760px) {
@@ -871,7 +929,7 @@ a.link {
 
 	/* Position the tooltip text - see examples below! */
 	position: absolute;
-	top: 0.4em;
+	top: -0.2em;
 	right: -7em;
 	z-index: 1;
 }
@@ -894,10 +952,26 @@ a.link {
 	border-color: transparent black transparent transparent;
 }
 
+#volume-visual-bar {
+	width: 100%;
+	height: 5px;
+	position: fixed;
+	top: 0px;
+	left: 0px;
+	background-color: black;
+}
+#volume-visual-bar .volume-bar {
+	height: 100%;
+	background: skyblue;
+	background: linear-gradient(to right, skyblue, lightgreen);
+}
+
 </style>
 <title><?php echo basename(__DIR__) ?></title>
 </head>
 <body>
+<div id="volume-visual-bar">
+</div>
 <header><?php echo basename(__DIR__) ?></header>
 
 <?php
