@@ -724,7 +724,7 @@ header {
 }
 #currentsong {
 	display: none;
-	margin: 5px 0px 5px 0px;
+	margin: 5px;
 	padding: 0px;
 }
 @media all and (max-width: 760px) {
