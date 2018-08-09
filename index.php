@@ -615,7 +615,7 @@ function enableControls() {
 
 function audioScroll(e) {
 	e.preventDefault();
-	var el = e.srcElement;
+	var el = e.target || e.srcElement;
 	// deltaY is usually -100 (up) or 100 (down)
 	var newVolume = el.volume - (e.deltaY / 1000);
 	if (newVolume < 0) newVolume = 0;
