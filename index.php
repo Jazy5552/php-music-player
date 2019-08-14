@@ -1,17 +1,34 @@
 <?php
+// Hidden feature: ALT+CLICK Directory links to download them as zips
+// Hidden feature: CTRL+CLICK Header to enable super recursive mode
 //TODO Get rid of these stupid fucking strtolowers!
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['down'])) {
-  //Client wants to download a file lets give it to em
-	$file = $_GET['down'];
+  //Client wants to download a file/dir lets give it to em
+	$file = $_GET['down']; // Should probably basename() this...
 
-	//Ensure the file is in a sub dir of this file (Security)
+	//Ensure the file/dir is in a sub dir of this file (Security)
 	$curDir = __DIR__ . '/';
 	$fullPath = realpath($curDir . $file);
 	if (strpos($fullPath, $curDir) !== 0) {
 		die('Unauthorized');
 	}
-	$file = $fullPath;
 
+	if (is_dir($fullPath)) {
+		// We sending a dir (Hopefully not too big...)
+		$zipFilePath = sys_get_temp_dir() . DIRECTORY_SEPARATOR . basename($file) . '.zip';
+		// Shity cache system below...
+		$res = exec('test ! -f "' . $zipFilePath . '" && zip -r "' . $zipFilePath . '" "' . $fullPath . '"');
+
+		// Send that sucker
+		header('Content-Type: archive/zip');
+		header('Content-Transfer-Encoding: Binary');
+		header('Content-Disposition: attachment; filename="' .basename($zipFilePath). '"');
+		header('Content-Length: ' . filesize($zipFilePath));
+		readfile($zipFilePath); // do the double-download-dance (dirty but worky)
+		die(); // rip
+	}
+
+	$file = $fullPath; // ffs...
 	//Only allow mp3/mp4 and images
 	if ((strpos(strtolower($file), '.mp') === false
 		&& strpos(strtolower($file), 'jpg') === false
@@ -26,7 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['down'])) {
 	header('Content-Disposition: attachment; filename="' .basename($file). '"');
 	header('Content-Length: ' . filesize($file));
   readfile($file); // do the double-download-dance (dirty but worky)
-  die();
+  die(); // rip
 }
 //WARNING Change this depending on what you want the file to do
 $INFECTDEPTH = 3; //Depth at which this index file will clone itself into directories
@@ -107,7 +124,7 @@ function CreateHTMLCode($odir, $filename, $superrecursive,
 				}
 			} else {
 				$directoriesHTML .= '<article class="dir">
-				<div class=""><a class="defaultCursor link" href="' . $file . '" id="' . $file . '"><i class="fa fa-folder-open" aria-hidden="true"></i>
+				<div class=""><a class="defaultCursor link dir__link" href="' . $file . '" id="' . $file . '"><i class="fa fa-folder-open" aria-hidden="true"></i>
         ' . substr($file, 2) . '</a></div>
 				</article>';
 			}
@@ -117,7 +134,7 @@ function CreateHTMLCode($odir, $filename, $superrecursive,
 			&& basename($file) !== $filename) {
 			//Display file name
 			$directoriesHTML .= '<article class="file">
-			<div class="tooltip"><a class="defaultCursor link" href="' . $file . '" id="' . $file . '"><i class="fa fa-file-o" aria-hidden="true"></i>
+			<div class="tooltip"><a class="defaultCursor link file__link" href="' . $file . '" id="' . $file . '"><i class="fa fa-file-o" aria-hidden="true"></i>
       ' . substr($file, 2) . '</a><span class="tooltiptext">' . $fs . '</span></div>
 			</article>';
 		}
@@ -670,6 +687,13 @@ function attachAudioEvents() {
 	});
 }
 
+function dirLinkClick(e) {
+	if (!e.altKey) return;
+	e.preventDefault();
+	download(e.target.id);
+	return;
+}
+
 window.onload = function() {
 	var pa = document.getElementById('play');
 	if (pa !== null) {
@@ -687,6 +711,11 @@ window.onload = function() {
 	var imgs = document.getElementsByClassName('albumart');
 	Array.prototype.forEach.call(imgs, function(img) {
 		img.addEventListener('click', downImage);
+	});
+
+	var dirLinks = document.getElementsByClassName('dir__link');
+	Array.prototype.forEach.call(dirLinks, function(dirLink) {
+		dirLink.addEventListener('click', dirLinkClick);
 	});
 
 	scrollAlbumArt();
