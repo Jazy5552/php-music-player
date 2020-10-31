@@ -16,6 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['down'])) {
 	if (is_dir($fullPath)) {
 		// We sending a dir (Hopefully not too big...)
 		//$zipFilePath = sys_get_temp_dir() . DIRECTORY_SEPARATOR . basename($file) . '.zip';
+		// Store the zip in the same directory
 		$zipFilePath = $curDir . basename($file) . '.zip';
 		// Shity cache system below...
 		$res = exec('test ! -f "' . $zipFilePath . '" && zip -r "' . $zipFilePath . '" "' . $fullPath . '"');
@@ -24,13 +25,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['down'])) {
 		  die('Error');
 		}
 
+		// Let the server process the zip, which will appear in the same directory the user is looking at
+		die();
+
 		// Send that sucker
-		header('Content-Type: archive/zip');
-		header('Content-Transfer-Encoding: Binary');
-		header('Content-Disposition: attachment; filename="' .basename($zipFilePath). '"');
-		header('Content-Length: ' . filesize($zipFilePath));
-		readfile($zipFilePath); // do the double-download-dance (dirty but worky)
-		die(); // rip
+		//header('Content-Type: archive/zip');
+		//header('Content-Transfer-Encoding: Binary');
+		//header('Content-Disposition: attachment; filename="' .basename($zipFilePath). '"');
+		//header('Content-Length: ' . filesize($zipFilePath));
+		//readfile($zipFilePath); // do the double-download-dance (dirty but worky)
+		//die(); // rip
 	}
 
 	$file = $fullPath; // ffs...
@@ -591,7 +595,9 @@ function download(file) {
 		loc += '&down=' + file;
 	}
 
-	window.location = loc; //rip
+	//window.location = loc; //rip
+	// The server will process the zip file
+	fetch(loc);
 }
 
 function headerClicked(e) {
@@ -695,7 +701,15 @@ function attachAudioEvents() {
 function dirLinkClick(e) {
 	if (!e.altKey) return;
 	e.preventDefault();
+	const target = e.currentTarget;
+	if (target.getAttribute("zipping")) return;
+	target.setAttribute("zipping", "true");
 	download(e.target.id);
+	// Show downloading UI
+	target.style.opacity = 0.1;
+	const s = document.createElement("span");
+	s.innerText = "Creating zip... Refresh after 60+ seconds"
+	target.parentElement.append(s);
 	return;
 }
 
