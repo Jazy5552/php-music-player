@@ -7,7 +7,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['down'])) {
 	$file = $_GET['down']; // Should probably basename() this...
 
 	//Ensure the file/dir is in a sub dir of this file (Security)
-	$curDir = __DIR__ . '/';
+	$curDir = __DIR__ . DIRECTORY_SEPARATOR;
 	$fullPath = realpath($curDir . $file);
 	if (strpos($fullPath, $curDir) !== 0) {
 		die('Unauthorized');
@@ -15,9 +15,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['down'])) {
 
 	if (is_dir($fullPath)) {
 		// We sending a dir (Hopefully not too big...)
-		$zipFilePath = sys_get_temp_dir() . DIRECTORY_SEPARATOR . basename($file) . '.zip';
+		//$zipFilePath = sys_get_temp_dir() . DIRECTORY_SEPARATOR . basename($file) . '.zip';
+		$zipFilePath = $curDir . basename($file) . '.zip';
 		// Shity cache system below...
 		$res = exec('test ! -f "' . $zipFilePath . '" && zip -r "' . $zipFilePath . '" "' . $fullPath . '"');
+
+		if (!file_exists($zipFilePath)) {
+		  die('Error');
+		}
 
 		// Send that sucker
 		header('Content-Type: archive/zip');
