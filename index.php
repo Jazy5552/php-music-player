@@ -19,7 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['down'])) {
 		// Store the zip in the same directory
 		$zipFilePath = $curDir . basename($file) . '.zip';
 		// Shity cache system below...
-		$res = exec('test ! -f "' . $zipFilePath . '" && zip -r "' . $zipFilePath . '" "' . $fullPath . '"');
+		$res = exec('test ! -f "' . $zipFilePath . '" && cd "' . $curDir . '" && zip -r "' . $zipFilePath . '" "' . $file . '"');
 
 		if (!file_exists($zipFilePath)) {
 		  die('Error');
@@ -597,7 +597,7 @@ function download(file) {
 
 	//window.location = loc; //rip
 	// The server will process the zip file
-	fetch(loc);
+	return fetch(loc);
 }
 
 function headerClicked(e) {
@@ -704,12 +704,19 @@ function dirLinkClick(e) {
 	const target = e.currentTarget;
 	if (target.getAttribute("zipping")) return;
 	target.setAttribute("zipping", "true");
-	download(e.target.id);
-	// Show downloading UI
 	target.style.opacity = 0.1;
+
 	const s = document.createElement("span");
-	s.innerText = "Creating zip... Refresh after 60+ seconds"
+	s.innerText = "Creating zip... please wait"
 	target.parentElement.append(s);
+
+	download(e.target.id).then(() => {
+		//s.remove();
+		//target.style.opacity = 1;
+		//target.removeAttribute("zipping");
+		location.reload();
+	});
+	// Show downloading UI
 	return;
 }
 
