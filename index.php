@@ -1,7 +1,15 @@
 <?php
+// WARNING This script is basically a worm. It will replicate itself into sub-directories, given enough
+// permission to do so. Intention being to create a media explorer through various media directories
+
 // Hidden feature: ALT+CLICK Directory links to download them as zips
 // Hidden feature: CTRL+CLICK Header to enable super recursive mode
-//TODO Get rid of these stupid fucking strtolowers!
+
+// Change this depending on what you want the file to do
+$INFECTDEPTH = 3; //Depth at which this index file will clone itself into directories
+// Set INFECTDEPTH to 0 to prevent this file from cloning itself
+// NOTE: Each iteration will clone it self deeper when accessed. This is just
+// to dampen the general server load. aka: shitty coding
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['down'])) {
   //Client wants to download a file/dir lets give it to em
 	$file = $_GET['down']; // Should probably basename() this...
@@ -54,14 +62,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['down'])) {
   readfile($file); // do the double-download-dance (dirty but worky)
   die(); // rip
 }
-//WARNING Change this depending on what you want the file to do
-$INFECTDEPTH = 3; //Depth at which this index file will clone itself into directories
-//Set INFECTDEPTH to 0 to prevent this file from cloning itself
-//NOTE: Each iteration will clone it self deeper when accessed. This is just
-//to dampen the general server load. aka: shitty coding
 
 //TODO Add more customization
-//DONT EDIT BELOW THIS
 $superrecursive = isset($_GET['recursive']); #If recursive then form a huge music list
 $_dir = './';
 $_filename = basename(__FILE__); #Name of the php file to be ignored
